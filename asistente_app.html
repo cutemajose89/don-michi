@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Tu vista ✦">
+<meta name="theme-color" content="#f5f4f0">
+<link rel="apple-touch-icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj4KICA8cmVjdCB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgcng9IjIyIiBmaWxsPSIjZjVmNGYwIi8+CiAgPHBhdGggZD0iTTE4IDU2IFExOCAyNCAzMCAxNSBMMzMgMzAgUTM4IDI2IDUwIDI2IFE2MiAyNiA2NyAzMCBMNzAgMTUgUTgyIDI0IDgyIDU2IFE4MiA3OCA1MCA4MCBRMTggNzggMTggNTZaIiBmaWxsPSIjMWExYTFhIi8+CiAgPHBhdGggZD0iTTMwIDE1IEwzMyAzMCBRMzAgMjMgMjUgMTlaIiBmaWxsPSIjMWExYTFhIi8+CiAgPHBhdGggZD0iTTcwIDE1IEw2NyAzMCBRNzAgMjMgNzUgMTlaIiBmaWxsPSIjMWExYTFhIi8+CiAgPGNpcmNsZSBjeD0iMzUiIGN5PSI1MiIgcj0iOSIgZmlsbD0iIzU1Y2M0NCIvPgogIDxjaXJjbGUgY3g9IjY1IiBjeT0iNTIiIHI9IjkiIGZpbGw9IiM1NWNjNDQiLz4KICA8Y2lyY2xlIGN4PSIzNSIgY3k9IjUyIiByPSI1IiBmaWxsPSIjMWExYTFhIi8+CiAgPGNpcmNsZSBjeD0iNjUiIGN5PSI1MiIgcj0iNSIgZmlsbD0iIzFhMWExYSIvPgogIDxjaXJjbGUgY3g9IjM3IiBjeT0iNDkiIHI9IjIuNSIgZmlsbD0id2hpdGUiLz4KICA8Y2lyY2xlIGN4PSI2NyIgY3k9IjQ5IiByPSIyLjUiIGZpbGw9IndoaXRlIi8+Cjwvc3ZnPg==">
+<link rel="icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj4KICA8cmVjdCB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgcng9IjIyIiBmaWxsPSIjZjVmNGYwIi8+CiAgPHBhdGggZD0iTTE4IDU2IFExOCAyNCAzMCAxNSBMMzMgMzAgUTM4IDI2IDUwIDI2IFE2MiAyNiA2NyAzMCBMNzAgMTUgUTgyIDI0IDgyIDU2IFE4MiA3OCA1MCA4MCBRMTggNzggMTggNTZaIiBmaWxsPSIjMWExYTFhIi8+CiAgPHBhdGggZD0iTTMwIDE1IEwzMyAzMCBRMzAgMjMgMjUgMTlaIiBmaWxsPSIjMWExYTFhIi8+CiAgPHBhdGggZD0iTTcwIDE1IEw2NyAzMCBRNzAgMjMgNzUgMTlaIiBmaWxsPSIjMWExYTFhIi8+CiAgPGNpcmNsZSBjeD0iMzUiIGN5PSI1MiIgcj0iOSIgZmlsbD0iIzU1Y2M0NCIvPgogIDxjaXJjbGUgY3g9IjY1IiBjeT0iNTIiIHI9IjkiIGZpbGw9IiM1NWNjNDQiLz4KICA8Y2lyY2xlIGN4PSIzNSIgY3k9IjUyIiByPSI1IiBmaWxsPSIjMWExYTFhIi8+CiAgPGNpcmNsZSBjeD0iNjUiIGN5PSI1MiIgcj0iNSIgZmlsbD0iIzFhMWExYSIvPgogIDxjaXJjbGUgY3g9IjM3IiBjeT0iNDkiIHI9IjIuNSIgZmlsbD0id2hpdGUiLz4KICA8Y2lyY2xlIGN4PSI2NyIgY3k9IjQ5IiByPSIyLjUiIGZpbGw9IndoaXRlIi8+Cjwvc3ZnPg==">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
+<title>Tu vista — Escritorio de Michi</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: #f5f4f0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; display: flex; justify-content: center; min-height: 100vh; }
+.app { max-width: 390px; width: 100%; padding: 16px 16px 90px; }
+.header { text-align: center; padding: 20px 0 12px; }
+.greeting { font-size: 12px; color: #888; letter-spacing: 0.05em; }
+.name { font-size: 24px; font-weight: 500; color: #1a1a1a; margin: 4px 0 2px; }
+.date-line { font-size: 12px; color: #888; }
+.don-row { display: flex; align-items: flex-end; gap: 10px; margin: 12px 0 16px; }
+.bubble { border-radius: 14px 14px 14px 2px; padding: 11px 14px; font-size: 13px; line-height: 1.55; flex: 1; background: white; border: 0.5px solid #e8e5e0; color: #1a1a1a; }
+.sec-title { font-size: 10px; font-weight: 500; color: #888; letter-spacing: 0.07em; text-transform: uppercase; margin: 16px 0 8px; display: flex; align-items: center; gap: 6px; }
+.badge { font-size: 10px; background: #D4537E; color: white; padding: 1px 7px; border-radius: 10px; }
+.tipo-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 16px; }
+.tipo-btn { border: 0.5px solid #e8e5e0; border-radius: 16px; padding: 14px 12px; cursor: pointer; text-align: center; background: white; transition: all 0.15s; }
+.tipo-btn.selected { border-width: 1.5px; }
+.tipo-icon { font-size: 22px; margin-bottom: 5px; }
+.tipo-label { font-size: 12px; font-weight: 500; color: #1a1a1a; }
+.tipo-desc { font-size: 10px; color: #888; margin-top: 2px; line-height: 1.3; }
+.form-card { background: white; border: 0.5px solid #e8e5e0; border-radius: 16px; padding: 14px 15px; margin-bottom: 10px; display: none; }
+.form-card.active { display: block; }
+.field { margin-bottom: 14px; }
+.field-label { font-size: 11px; font-weight: 500; color: #888; letter-spacing: 0.05em; text-transform: uppercase; margin-bottom: 6px; }
+.field-input { width: 100%; font-size: 13px; padding: 8px 11px; border-radius: 10px; border: 0.5px solid #e8e5e0; background: #f9f8f5; color: #1a1a1a; outline: none; font-family: inherit; }
+.field-input:focus { border-color: #534AB7; }
+.field-input::placeholder { color: #bbb; }
+textarea.field-input { resize: none; height: 80px; line-height: 1.5; }
+.tags-row { display: flex; gap: 6px; flex-wrap: wrap; }
+.tag-sel { font-size: 11px; padding: 5px 12px; border-radius: 16px; border: 0.5px solid #e8e5e0; background: transparent; color: #888; cursor: pointer; transition: all 0.15s; }
+.tag-sel.on { font-weight: 500; }
+.tag-inv.on{background:#EEEDFE;border-color:#AFA9EC;color:#3C3489;}
+.tag-doc.on{background:#E6F1FB;border-color:#93C4EC;color:#0C447C;}
+.tag-sal.on{background:#EAF3DE;border-color:#8DC95A;color:#3B6D11;}
+.tag-per.on{background:#FBEAF0;border-color:#ED93B1;color:#72243E;}
+.tag-adm.on{background:#F1EFE8;border-color:#C4B99A;color:#444;}
+.tag-ase.on{background:#FFF3E0;border-color:#FFB74D;color:#7B4800;}
+.tag-accion.on{background:#E1F5EE;border-color:#5DCAA5;color:#085041;}
+.toggle-row { display: flex; align-items: center; justify-content: space-between; padding: 8px 0; border-bottom: 0.5px solid #f0ede8; }
+.toggle-row:last-child { border-bottom: none; }
+.toggle-label { font-size: 13px; color: #1a1a1a; }
+.toggle { width: 36px; height: 20px; border-radius: 10px; background: #e0ddd8; cursor: pointer; position: relative; transition: background 0.2s; flex-shrink: 0; }
+.toggle.on { background: #1D9E75; }
+.toggle-knob { width: 16px; height: 16px; border-radius: 50%; background: white; position: absolute; top: 2px; left: 2px; transition: left 0.2s; box-shadow: 0 1px 3px rgba(0,0,0,0.15); }
+.toggle.on .toggle-knob { left: 18px; }
+.opciones-list { display: flex; flex-direction: column; gap: 6px; margin-bottom: 6px; }
+.opcion-row { display: flex; gap: 6px; align-items: center; }
+.opcion-input { flex: 1; font-size: 13px; padding: 6px 10px; border-radius: 10px; border: 0.5px solid #e8e5e0; background: #f9f8f5; color: #1a1a1a; outline: none; font-family: inherit; }
+.opcion-input::placeholder { color: #bbb; }
+.add-opcion { font-size: 12px; color: #534AB7; cursor: pointer; padding: 4px 0; display: inline-block; }
+.submit-btn { width: 100%; padding: 13px; border-radius: 14px; background: #1a1a1a; color: white; border: none; font-size: 14px; font-weight: 500; cursor: pointer; font-family: inherit; margin-top: 4px; display: flex; align-items: center; justify-content: center; gap: 8px; }
+.submit-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.spinner { width: 16px; height: 16px; border: 2px solid rgba(255,255,255,0.3); border-top-color: white; border-radius: 50%; animation: spin 0.7s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.success { display: none; text-align: center; padding: 40px 16px; }
+.success-txt { font-size: 15px; color: #1a1a1a; font-weight: 500; margin-top: 12px; }
+.success-sub { font-size: 13px; color: #888; margin-top: 6px; }
+.otro-btn { font-size: 13px; color: #534AB7; cursor: pointer; margin-top: 16px; display: inline-block; padding: 8px 20px; border: 0.5px solid #534AB7; border-radius: 20px; }
+.error-msg { font-size: 12px; color: #E24B4A; margin-top: 8px; text-align: center; display: none; padding: 8px 12px; background: #FCEBEB; border-radius: 8px; }
+.tarea-card { background: white; border: 0.5px solid #e8e5e0; border-radius: 14px; padding: 12px 14px; margin-bottom: 8px; }
+.tarea-card.urgente { border-color: #F09595; background: #FCEBEB; }
+.tarea-card.deadline-fire { border-color: #F09595; background: #FCEBEB; }
+.tarea-card.deadline-warn { border-color: #FAC775; background: #FAEEDA; }
+.tarea-card.pregunta { border-color: #AFA9EC; background: #F5F4FF; }
+.tarea-titulo { font-size: 13px; font-weight: 500; color: #1a1a1a; line-height: 1.4; margin-bottom: 3px; }
+.tarea-meta { font-size: 11px; color: #888; }
+.tarea-tipo-badge { font-size: 10px; padding: 2px 8px; border-radius: 10px; display: inline-block; margin-top: 4px; }
+.tipo-urgente { background: #FCEBEB; color: #A32D2D; }
+.tipo-deadline { background: #FAEEDA; color: #854F0B; }
+.tipo-pregunta { background: #EEEDFE; color: #3C3489; }
+.tipo-correo { background: #E6F1FB; color: #0C447C; }
+.tipo-tarea { background: #f5f4f0; color: #888; }
+.respondio { font-size: 11px; color: #085041; background: #E1F5EE; padding: 4px 10px; border-radius: 10px; display: inline-block; margin-top: 6px; }
+.pasos-row { display: flex; align-items: center; gap: 2px; margin: 6px 0; }
+.paso-g { display: flex; flex-direction: column; align-items: center; gap: 2px; }
+.paso-c { width: 18px; height: 18px; border-radius: 50%; border: 1.5px solid #ccc; font-size: 9px; display: flex; align-items: center; justify-content: center; color: #888; flex-shrink: 0; cursor: pointer; }
+.paso-c.hecho { background: #1D9E75; border-color: #1D9E75; color: white; }
+.paso-c.activo { border-color: #EF9F27; color: #854F0B; font-weight: 600; }
+.paso-t { font-size: 9px; color: #888; max-width: 48px; text-align: center; line-height: 1.3; }
+.paso-linea { flex: 1; height: 1px; background: #e8e5e0; min-width: 4px; }
+.deadline-barra-bg { height: 4px; background: rgba(0,0,0,0.07); border-radius: 2px; overflow: hidden; margin: 4px 0 6px; }
+.deadline-barra-fill { height: 100%; border-radius: 2px; }
+.thread-toggle { font-size: 11px; color: #888; cursor: pointer; display: flex; align-items: center; gap: 4px; margin-top: 6px; padding: 2px 0; user-select: none; }
+.thread-body { display: none; margin-top: 4px; }
+.thread-body.open { display: block; }
+.thread-dot { width: 6px; height: 6px; border-radius: 50%; background: #D4537E; display: inline-block; margin-left: 3px; vertical-align: middle; }
+.convo-thread { display: flex; flex-direction: column; gap: 4px; margin-bottom: 6px; }
+.msg-michi { display: flex; justify-content: flex-end; }
+.msg-michi .msg-bub { background: #EEEDFE; border: 0.5px solid #AFA9EC; border-radius: 10px 10px 2px 10px; padding: 6px 10px; font-size: 11px; color: #3C3489; display: inline-block; max-width: 90%; line-height: 1.4; }
+.msg-asistente .msg-bub { background: #f5f4f0; border: 0.5px solid #e8e5e0; border-radius: 10px 10px 10px 2px; padding: 6px 10px; font-size: 11px; color: #888; display: inline-block; max-width: 90%; line-height: 1.4; }
+.reply-row { display: flex; gap: 5px; align-items: center; margin-top: 4px; }
+.reply-input { flex: 1; font-size: 11px; padding: 4px 9px; border-radius: 12px; border: 0.5px solid #e0ddd8; background: #f9f8f5; color: #1a1a1a; outline: none; font-family: inherit; height: 26px; }
+.reply-input::placeholder { color: #bbb; }
+.reply-btn { width: 24px; height: 24px; border-radius: 50%; background: #534AB7; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.preview-box { display: none; margin-top: 6px; cursor: pointer; }
+.loading-state { text-align: center; padding: 30px; color: #888; font-size: 13px; }
+.big-spinner { width: 28px; height: 28px; border: 2px solid #e8e5e0; border-top-color: #534AB7; border-radius: 50%; animation: spin 0.7s linear infinite; margin: 40px auto; }
+.nav { display: flex; justify-content: space-around; padding: 12px 0 6px; border-top: 0.5px solid #e8e5e0; position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 390px; background: #f5f4f0; }
+.nav-it { display: flex; flex-direction: column; align-items: center; gap: 3px; cursor: pointer; padding: 4px 12px; position: relative; }
+.nav-lbl { font-size: 10px; color: #888; }
+.nav-it.active .nav-lbl { color: #1a1a1a; font-weight: 500; }
+.notif-dot-nav { width: 7px; height: 7px; border-radius: 50%; background: #D4537E; position: absolute; top: 0; right: 8px; display: none; }
+.screen { display: none; }
+.screen.active { display: block; }
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="header">
+    <div class="greeting">hola de nuevo</div>
+    <div class="name">tu vista ✦</div>
+    <div class="date-line" id="top-date"></div>
+  </div>
+
+  <div class="don-row">
+    <svg width="44" height="44" viewBox="0 0 100 100" fill="none">
+      <path d="M18 56 Q18 24 30 15 L33 30 Q38 26 50 26 Q62 26 67 30 L70 15 Q82 24 82 56 Q82 78 50 80 Q18 78 18 56Z" fill="#1a1a1a"/>
+      <path d="M30 15 L33 30 Q30 23 25 19Z" fill="#1a1a1a"/><path d="M70 15 L67 30 Q70 23 75 19Z" fill="#1a1a1a"/>
+      <circle cx="35" cy="52" r="9" fill="#55cc44"/><circle cx="65" cy="52" r="9" fill="#55cc44"/>
+      <circle cx="35" cy="52" r="5" fill="#1a1a1a"/><circle cx="65" cy="52" r="5" fill="#1a1a1a"/>
+      <circle cx="37" cy="49" r="2.5" fill="white"/><circle cx="67" cy="49" r="2.5" fill="white"/>
+    </svg>
+    <div class="bubble" id="don-bubble">¿Qué le agregamos hoy a Michi?</div>
+  </div>
+
+  <!-- AGREGAR -->
+  <div class="screen active" id="screen-agregar">
+    <div class="sec-title">¿qué tipo de cosa es?</div>
+    <div class="tipo-grid">
+      <div class="tipo-btn" id="tipo-tarea" onclick="selectTipo('tarea')"><div class="tipo-icon">✅</div><div class="tipo-label">Tarea</div><div class="tipo-desc">algo que hay que hacer</div></div>
+      <div class="tipo-btn" id="tipo-deadline" onclick="selectTipo('deadline')"><div class="tipo-icon">📅</div><div class="tipo-label">Deadline</div><div class="tipo-desc">tiene fecha límite</div></div>
+      <div class="tipo-btn" id="tipo-pregunta" onclick="selectTipo('pregunta')"><div class="tipo-icon">💬</div><div class="tipo-label">Pregunta</div><div class="tipo-desc">necesita su respuesta</div></div>
+      <div class="tipo-btn" id="tipo-correo" onclick="selectTipo('correo')"><div class="tipo-icon">📩</div><div class="tipo-label">Correo</div><div class="tipo-desc">algo que llegó al mail</div></div>
+    </div>
+
+    <div class="form-card" id="form-tarea">
+      <div class="field"><div class="field-label">¿qué hay que hacer?</div><input class="field-input" id="t-titulo" placeholder="ej. Llamar al comedor comunitario"/></div>
+      <div class="field"><div class="field-label">contexto o notas</div><textarea class="field-input" id="t-desc" placeholder="lo que Michi necesita saber..."></textarea></div>
+      <div class="field"><div class="field-label">categoría</div><div class="tags-row" id="t-cat-row">
+        <div class="tag-sel tag-inv" onclick="toggleTag(this,'t-cat')">investigación</div>
+        <div class="tag-sel tag-doc" onclick="toggleTag(this,'t-cat')">docencia</div>
+        <div class="tag-sel tag-sal" onclick="toggleTag(this,'t-cat')">salud</div>
+        <div class="tag-sel tag-per" onclick="toggleTag(this,'t-cat')">personal</div>
+        <div class="tag-sel tag-adm" onclick="toggleTag(this,'t-cat')">admin</div>
+        <div class="tag-sel tag-ase" onclick="toggleTag(this,'t-cat')">asesorados</div>
+      </div></div>
+      <div class="field"><div class="toggle-row"><div class="toggle-label">¿es urgente hoy?</div><div class="toggle" id="t-urgente" onclick="toggleSwitch(this)"><div class="toggle-knob"></div></div></div></div>
+      <button class="submit-btn" id="btn-tarea" onclick="submitForm('tarea')">agregar a la app de Michi</button>
+      <div class="error-msg" id="err-tarea"></div>
+    </div>
+
+    <div class="form-card" id="form-deadline">
+      <div class="field"><div class="field-label">nombre del deadline</div><input class="field-input" id="d-titulo" placeholder="ej. Tesis Romani Chia — informe"/></div>
+      <div class="field"><div class="field-label">fecha límite</div><input class="field-input" type="date" id="d-fecha"/></div>
+      <div class="field"><div class="field-label">descripción</div><textarea class="field-input" id="d-desc" placeholder="qué hay que entregar, contexto..."></textarea></div>
+      <div class="field"><div class="field-label">link (si tiene)</div><input class="field-input" id="d-link" placeholder="https://..."/></div>
+      <div class="field"><div class="field-label">pasos a seguir</div>
+        <div class="opciones-list" id="pasos-list">
+          <div class="opcion-row"><input class="opcion-input paso-input" placeholder="paso 1"/></div>
+          <div class="opcion-row"><input class="opcion-input paso-input" placeholder="paso 2"/></div>
+        </div>
+        <div class="add-opcion" onclick="addPaso()">+ agregar paso</div>
+      </div>
+      <div class="field"><div class="field-label">categoría</div><div class="tags-row">
+        <div class="tag-sel tag-inv" onclick="toggleTag(this,'d-cat')">investigación</div>
+        <div class="tag-sel tag-doc" onclick="toggleTag(this,'d-cat')">docencia</div>
+        <div class="tag-sel tag-sal" onclick="toggleTag(this,'d-cat')">salud</div>
+        <div class="tag-sel tag-per" onclick="toggleTag(this,'d-cat')">personal</div>
+        <div class="tag-sel tag-ase" onclick="toggleTag(this,'d-cat')">asesorados</div>
+      </div></div>
+      <button class="submit-btn" id="btn-deadline" onclick="submitForm('deadline')">agregar a la app de Michi</button>
+      <div class="error-msg" id="err-deadline"></div>
+    </div>
+
+    <div class="form-card" id="form-pregunta">
+      <div class="field"><div class="field-label">¿qué le preguntas?</div><textarea class="field-input" id="p-titulo" placeholder="ej. ¿Quieres que responda el correo de Marta?"></textarea></div>
+      <div class="field"><div class="field-label">contexto adicional</div><textarea class="field-input" id="p-desc" placeholder="lo que necesita saber para decidir..."></textarea></div>
+      <div class="field"><div class="field-label">categoría</div><div class="tags-row">
+        <div class="tag-sel tag-inv" onclick="toggleTag(this,'p-cat')">investigación</div>
+        <div class="tag-sel tag-doc" onclick="toggleTag(this,'p-cat')">docencia</div>
+        <div class="tag-sel tag-sal" onclick="toggleTag(this,'p-cat')">salud</div>
+        <div class="tag-sel tag-per" onclick="toggleTag(this,'p-cat')">personal</div>
+        <div class="tag-sel tag-adm" onclick="toggleTag(this,'p-cat')">admin</div>
+        <div class="tag-sel tag-ase" onclick="toggleTag(this,'p-cat')">asesorados</div>
+      </div></div>
+      <div class="field"><div class="toggle-row"><div class="toggle-label">¿es urgente?</div><div class="toggle" id="p-urgente" onclick="toggleSwitch(this)"><div class="toggle-knob"></div></div></div></div>
+      <button class="submit-btn" id="btn-pregunta" onclick="submitForm('pregunta')">agregar a la app de Michi</button>
+      <div class="error-msg" id="err-pregunta"></div>
+    </div>
+
+    <div class="form-card" id="form-correo">
+      <div class="field"><div class="field-label">¿de quién es?</div><input class="field-input" id="c-de" placeholder="ej. Marta Ríos"/></div>
+      <div class="field"><div class="field-label">asunto</div><input class="field-input" id="c-asunto" placeholder="ej. Propuesta proyecto Arco"/></div>
+      <div class="field"><div class="field-label">tu resumen</div><textarea class="field-input" id="c-desc" placeholder="qué dice, qué pide, qué necesita Michi saber..."></textarea></div>
+      <div class="field"><div class="field-label">¿qué necesita hacer Michi?</div><div class="tags-row">
+        <div class="tag-sel tag-accion" onclick="toggleTag(this,'c-accion')">responder</div>
+        <div class="tag-sel tag-accion" onclick="toggleTag(this,'c-accion')">revisar</div>
+        <div class="tag-sel tag-accion" onclick="toggleTag(this,'c-accion')">archivar</div>
+        <div class="tag-sel tag-accion" onclick="toggleTag(this,'c-accion')">yo respondo</div>
+      </div></div>
+      <div class="field"><div class="field-label">link o adjunto (opcional)</div><input class="field-input" id="c-link" placeholder="https://..."/></div>
+      <div class="field"><div class="toggle-row"><div class="toggle-label">¿requiere respuesta urgente?</div><div class="toggle" id="c-urgente" onclick="toggleSwitch(this)"><div class="toggle-knob"></div></div></div></div>
+      <button class="submit-btn" id="btn-correo" onclick="submitForm('correo')">agregar a la app de Michi</button>
+      <div class="error-msg" id="err-correo"></div>
+    </div>
+
+    <div class="success" id="success-screen">
+      <svg width="60" height="64" viewBox="0 0 100 110" fill="none">
+        <path d="M18 56 Q18 24 30 15 L33 30 Q38 26 50 26 Q62 26 67 30 L70 15 Q82 24 82 56 Q82 78 50 80 Q18 78 18 56Z" fill="#1a1a1a"/>
+        <path d="M30 15 L33 30 Q30 23 25 19Z" fill="#1a1a1a"/><path d="M70 15 L67 30 Q70 23 75 19Z" fill="#1a1a1a"/>
+        <clipPath id="cl"><rect x="22" y="40" width="24" height="12"/></clipPath>
+        <circle cx="34" cy="51" r="11" fill="#55cc44" clip-path="url(#cl)"/><circle cx="34" cy="51" r="7" fill="#1a1a1a" clip-path="url(#cl)"/><circle cx="37" cy="47" r="3" fill="white" clip-path="url(#cl)"/>
+        <clipPath id="cr"><rect x="54" y="40" width="24" height="12"/></clipPath>
+        <circle cx="66" cy="51" r="11" fill="#55cc44" clip-path="url(#cr)"/><circle cx="66" cy="51" r="7" fill="#1a1a1a" clip-path="url(#cr)"/><circle cx="69" cy="47" r="3" fill="white" clip-path="url(#cr)"/>
+        <path d="M43 63 Q50 68 57 63" stroke="white" stroke-width="2" fill="none" stroke-linecap="round"/>
+        <path d="M43 63 Q50 69 57 63" fill="white"/>
+      </svg>
+      <div class="success-txt">¡Listo! Ya está en la app de Michi.</div>
+      <div class="success-sub">Don lo tiene en la mira.</div>
+      <div id="wa-btn-wrap" style="display:none;margin-top:12px;">
+        <a id="wa-btn" href="#" target="_blank" style="display:flex;align-items:center;justify-content:center;gap:8px;background:#25D366;color:white;font-size:13px;font-weight:500;padding:11px 20px;border-radius:20px;text-decoration:none;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.123.554 4.118 1.522 5.849L.057 23.552a.5.5 0 00.61.61l5.699-1.465A11.945 11.945 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.892a9.88 9.88 0 01-5.031-1.378l-.36-.214-3.733.96.992-3.623-.235-.373A9.866 9.866 0 012.108 12C2.108 6.527 6.527 2.108 12 2.108S21.892 6.527 21.892 12 17.473 21.892 12 21.892z"/></svg>
+          avisar a Michi por WhatsApp
+        </a>
+      </div>
+      <div class="otro-btn" onclick="resetForm()">agregar otra cosa</div>
+    </div>
+  </div>
+
+  <!-- PENDIENTES -->
+  <div class="screen" id="screen-pendientes">
+    <div id="pendientes-container"><div class="big-spinner"></div></div>
+  </div>
+
+  <!-- RESPUESTAS -->
+  <div class="screen" id="screen-respuestas">
+    <div id="respuestas-container"><div class="big-spinner"></div></div>
+  </div>
+
+  <div class="nav">
+    <div class="nav-it active" id="nav-agregar" onclick="switchScreen('agregar')">
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="8" stroke="#1a1a1a" stroke-width="1.5"/><path d="M10 6v8M6 10h8" stroke="#1a1a1a" stroke-width="1.5" stroke-linecap="round"/></svg>
+      <div class="nav-lbl">agregar</div>
+    </div>
+    <div class="nav-it" id="nav-pendientes" onclick="switchScreen('pendientes');loadPendientes();">
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="2" y="2" width="7" height="7" rx="2" stroke="#888" stroke-width="1.5"/><rect x="11" y="2" width="7" height="7" rx="2" stroke="#888" stroke-width="1.5"/><rect x="2" y="11" width="7" height="7" rx="2" stroke="#888" stroke-width="1.5"/><rect x="11" y="11" width="7" height="7" rx="2" stroke="#888" stroke-width="1.5"/></svg>
+      <div class="nav-lbl">pendientes</div>
+      <div class="notif-dot-nav" id="notif-pendientes"></div>
+    </div>
+    <div class="nav-it" id="nav-respuestas" onclick="switchScreen('respuestas');loadRespuestas();">
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7" stroke="#888" stroke-width="1.5"/><path d="M10 6v4l3 2" stroke="#888" stroke-width="1.5" stroke-linecap="round"/></svg>
+      <div class="nav-lbl">respuestas</div>
+      <div class="notif-dot-nav" id="notif-respuestas"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+const TOKEN = 'patMCJ3Vrz8Uw32sO.9288ac142ac8780a9b1f02c10300158c138699ee85b4c11e1ee267d892161426';
+const BASE_ID = 'appz6fdbkJTA1S0GW';
+const diasN=['domingo','lunes','martes','miércoles','jueves','viernes','sábado'];
+const mesesN=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+const hoy=new Date(); hoy.setHours(0,0,0,0);
+document.getElementById('top-date').textContent=`${diasN[hoy.getDay()]} ${hoy.getDate()} de ${mesesN[hoy.getMonth()]}`;
+
+async function airtableRequest(method,path,body){
+  const url=`https://api.airtable.com/v0/${BASE_ID}/${path}`;
+  const opts={method,headers:{'Authorization':`Bearer ${TOKEN}`,'Content-Type':'application/json'}};
+  if(body) opts.body=JSON.stringify(body);
+  const res=await fetch(url,opts); const text=await res.text();
+  let data; try{data=JSON.parse(text);}catch(e){throw new Error('Respuesta inesperada');}
+  if(!res.ok) throw new Error(data?.error?.message||`Error ${res.status}`);
+  return data;
+}
+
+function diasRestantes(f){
+  if(!f) return null;
+  const fecha=new Date(f); fecha.setHours(0,0,0,0);
+  return Math.ceil((fecha-hoy)/86400000);
+}
+function fechaBonita(f){
+  if(!f) return '';
+  const d=new Date(f);
+  return `${d.getDate()} de ${mesesN[d.getMonth()]}`;
+}
+function diasLabel(d){
+  if(d===null) return '';
+  if(d<0) return `venció hace ${Math.abs(d)} día${Math.abs(d)>1?'s':''}`;
+  if(d===0) return 'vence hoy';
+  if(d===1) return 'mañana';
+  return `${d} días`;
+}
+
+let selectedCats={};
+function cap(s){return s?s.charAt(0).toUpperCase()+s.slice(1):'';}
+
+function selectTipo(tipo){
+  document.querySelectorAll('.tipo-btn').forEach(b=>{b.classList.remove('selected');b.style.borderColor='#e8e5e0';b.style.borderWidth='0.5px';});
+  document.querySelectorAll('.form-card').forEach(f=>f.classList.remove('active'));
+  document.getElementById('success-screen').style.display='none';
+  const colors={tarea:'#1D9E75',deadline:'#EF9F27',pregunta:'#534AB7',correo:'#D4537E'};
+  document.getElementById('tipo-'+tipo).classList.add('selected');
+  document.getElementById('tipo-'+tipo).style.borderColor=colors[tipo];
+  document.getElementById('tipo-'+tipo).style.borderWidth='1.5px';
+  document.getElementById('form-'+tipo).classList.add('active');
+  setTimeout(()=>document.getElementById('form-'+tipo).scrollIntoView({behavior:'smooth',block:'nearest'}),50);
+}
+
+function toggleTag(el,group){
+  document.querySelectorAll(`[onclick="toggleTag(this,'${group}')"]`).forEach(t=>t.classList.remove('on'));
+  el.classList.add('on'); selectedCats[group]=el.textContent.trim();
+}
+function toggleSwitch(el){el.classList.toggle('on');}
+function addPaso(){
+  const list=document.getElementById('pasos-list'); const n=list.children.length+1;
+  const div=document.createElement('div'); div.className='opcion-row';
+  div.innerHTML=`<input class="opcion-input paso-input" placeholder="paso ${n}"/>`;
+  list.appendChild(div);
+}
+
+function setLoading(btnId,loading){
+  const btn=document.getElementById(btnId); btn.disabled=loading;
+  btn.innerHTML=loading?'<div class="spinner"></div>':'agregar a la app de Michi';
+}
+
+async function submitForm(tipo){
+  const errId=`err-${tipo}`;
+  document.getElementById(errId).style.display='none';
+  let fields={'Estado':'Pendiente'};
+
+  if(tipo==='tarea'){
+    const titulo=document.getElementById('t-titulo').value.trim();
+    if(!titulo){document.getElementById('t-titulo').focus();return;}
+    fields={...fields,'Título':titulo,'Tipo':'Tarea','Descripción':document.getElementById('t-desc').value.trim(),'Categoría':cap(selectedCats['t-cat']||''),'Urgente':document.getElementById('t-urgente').classList.contains('on')};
+  } else if(tipo==='deadline'){
+    const titulo=document.getElementById('d-titulo').value.trim();
+    if(!titulo){document.getElementById('d-titulo').focus();return;}
+    fields={...fields,'Título':titulo,'Tipo':'Deadline','Descripción':document.getElementById('d-desc').value.trim(),'Categoría':cap(selectedCats['d-cat']||'')};
+    const fecha=document.getElementById('d-fecha').value; if(fecha) fields['Fecha límite']=fecha;
+    const link=document.getElementById('d-link').value.trim(); if(link) fields['Link']=link;
+  } else if(tipo==='pregunta'){
+    const titulo=document.getElementById('p-titulo').value.trim();
+    if(!titulo){document.getElementById('p-titulo').focus();return;}
+    fields={...fields,'Título':titulo,'Tipo':'Pregunta','Descripción':document.getElementById('p-desc').value.trim(),'Categoría':cap(selectedCats['p-cat']||''),'Urgente':document.getElementById('p-urgente').classList.contains('on')};
+  } else if(tipo==='correo'){
+    const de=document.getElementById('c-de').value.trim();
+    const asunto=document.getElementById('c-asunto').value.trim();
+    if(!asunto){document.getElementById('c-asunto').focus();return;}
+    fields={...fields,'Título':de?`${de} — ${asunto}`:asunto,'Tipo':'Correo','Descripción':document.getElementById('c-desc').value.trim(),'Urgente':document.getElementById('c-urgente').classList.contains('on')};
+    const link=document.getElementById('c-link').value.trim(); if(link) fields['Link']=link;
+  }
+
+  setLoading(`btn-${tipo}`,true);
+  try{
+    const rec=await airtableRequest('POST','Tareas',{fields});
+    if(tipo==='deadline'){
+      const pasos=[...document.querySelectorAll('.paso-input')].map(i=>i.value.trim()).filter(Boolean);
+      for(let i=0;i<pasos.length;i++) await airtableRequest('POST','Pasos',{fields:{'Paso':pasos[i],'Tarea':[rec.id],'Orden':i+1}});
+    }
+    document.querySelectorAll('.form-card').forEach(f=>f.classList.remove('active'));
+    document.querySelectorAll('.tipo-btn').forEach(b=>{b.classList.remove('selected');b.style.borderColor='#e8e5e0';b.style.borderWidth='0.5px';});
+    document.getElementById('success-screen').style.display='block';
+    window.scrollTo(0,0);
+    // Show WhatsApp button if urgente
+    const isUrgente = fields['Urgente'] === true;
+    const waBtnWrap = document.getElementById('wa-btn-wrap');
+    const waBtn = document.getElementById('wa-btn');
+    if (isUrgente && waBtnWrap && waBtn) {
+      const titulo = fields['Título'] || 'algo nuevo';
+      const tipo = fields['Tipo'] || 'tarea';
+      const msg = encodeURIComponent(`🐱 Don Urgencia al habla. Hay un ${tipo} urgente esperándote: "${titulo}". Entra a tu app cuando puedas.`);
+      waBtn.href = `https://wa.me/?text=${msg}`;
+      waBtnWrap.style.display = 'block';
+    } else if (waBtnWrap) {
+      waBtnWrap.style.display = 'none';
+    }
+  }catch(e){
+    const err=document.getElementById(errId); err.textContent=`Error: ${e.message}`; err.style.display='block';
+  }
+  setLoading(`btn-${tipo}`,false);
+}
+
+function resetForm(){
+  document.getElementById('success-screen').style.display='none';
+  document.querySelectorAll('.error-msg').forEach(e=>e.style.display='none');
+  document.querySelectorAll('.field-input').forEach(i=>i.value='');
+  document.querySelectorAll('.toggle.on').forEach(t=>t.classList.remove('on'));
+  document.querySelectorAll('.tag-sel.on').forEach(t=>t.classList.remove('on'));
+  // Reset pasos list
+  const pasosList=document.getElementById('pasos-list');
+  if(pasosList){pasosList.innerHTML='<div class="opcion-row"><input class="opcion-input paso-input" placeholder="paso 1"/></div><div class="opcion-row"><input class="opcion-input paso-input" placeholder="paso 2"/></div>';}
+  selectedCats={};
+}
+
+async function loadThreadComments(recordId, convoEl, previewEl, labelEl) {
+  try {
+    const data = await airtableRequest('GET','Comentarios?maxRecords=100');
+    convoEl.innerHTML='';
+    const filtered=(data.records||[]).filter(r=>{
+      const t=r.fields['Tarea'];
+      if(!t) return false;
+      if(Array.isArray(t)) return t.includes(recordId);
+      return t===recordId;
+    }).sort((a,b)=>new Date(a.createdTime)-new Date(b.createdTime));
+
+    filtered.forEach(r=>{
+      const div=document.createElement('div');
+      div.className=r.fields['De']==='Michi'?'msg-michi':'msg-asistente';
+      div.innerHTML=`<div class="msg-bub">${r.fields['Comentario']||''}</div>`;
+      convoEl.appendChild(div);
+    });
+
+    if(filtered.length>0){
+      const last=filtered[filtered.length-1];
+      const lastDe=last.fields['De']; const lastText=last.fields['Comentario']||'';
+      const isNew=lastDe==='Michi';
+      if(previewEl){
+        previewEl.style.display='flex';
+        const bubStyle=lastDe==='Michi'?'background:#EEEDFE;border:0.5px solid #AFA9EC;border-radius:10px 10px 2px 10px;color:#3C3489;':'background:#f5f4f0;border:0.5px solid #e8e5e0;border-radius:10px 10px 10px 2px;color:#888;';
+        previewEl.innerHTML=`<div style="font-size:11px;padding:6px 10px;${bubStyle}max-width:88%;line-height:1.4;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${lastText}</div>${isNew?'<span class="thread-dot"></span>':''}`;
+      }
+      if(labelEl) labelEl.innerHTML='ver más mensajes'+(isNew?'<span class="thread-dot"></span>':'');
+    } else {
+      if(previewEl) previewEl.style.display='none';
+      if(labelEl) labelEl.textContent='💬 comentar';
+    }
+  }catch(e){}
+}
+
+function makeThreadBox(recordId){
+  const wrap=document.createElement('div');
+  wrap.innerHTML=`<div class="preview-box" id="prev-a-${recordId}" onclick="toggleThreadA('${recordId}')"></div>
+    <div class="thread-toggle" onclick="toggleThreadA('${recordId}')"><span id="lbl-a-${recordId}">💬 comentar</span></div>
+    <div class="thread-body" id="body-a-${recordId}">
+      <div class="convo-thread" id="convo-a-${recordId}"></div>
+      <div class="reply-row">
+        <input class="reply-input" id="inp-a-${recordId}" placeholder="respóndele..." onkeydown="if(event.key==='Enter') sendReplyA('${recordId}')"/>
+        <button class="reply-btn" onclick="sendReplyA('${recordId}')"><svg width="10" height="10" viewBox="0 0 12 12" fill="none"><path d="M1 6h10M7 2l4 4-4 4" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      </div>
+    </div>`;
+  return wrap;
+}
+
+function toggleThreadA(recordId){
+  const body=document.getElementById('body-a-'+recordId);
+  const preview=document.getElementById('prev-a-'+recordId);
+  const label=document.getElementById('lbl-a-'+recordId);
+  const isOpen=body.classList.contains('open');
+  body.classList.toggle('open');
+  if(preview) preview.style.display=isOpen?'flex':'none';
+  if(label) label.textContent=isOpen?'ver más mensajes':'cerrar conversación';
+}
+
+async function sendReplyA(recordId){
+  const input=document.getElementById('inp-a-'+recordId);
+  const text=input.value.trim(); if(!text) return; input.value='';
+  const convoEl=document.getElementById('convo-a-'+recordId);
+  const div=document.createElement('div'); div.className='msg-asistente';
+  div.innerHTML=`<div class="msg-bub">${text}</div>`; convoEl.appendChild(div);
+  try{ await airtableRequest('POST','Comentarios',{fields:{'Comentario':text,'Tarea':[recordId],'De':'Asistente'}}); }catch(e){}
+}
+
+async function loadPasos(tareaId, container) {
+  try {
+    const data = await airtableRequest('GET','Pasos?maxRecords=20');
+    const pasos=(data.records||[]).filter(r=>{
+      const t=r.fields['Tarea']; return Array.isArray(t)&&t.includes(tareaId);
+    }).sort((a,b)=>(a.fields['Orden']||0)-(b.fields['Orden']||0));
+    if(!pasos.length) return;
+    const row=document.createElement('div'); row.className='pasos-row';
+    pasos.forEach((p,i)=>{
+      const hecho=p.fields['Hecho'];
+      const cls=hecho?'hecho':i===0||pasos.slice(0,i).every(x=>x.fields['Hecho'])?'activo':'';
+      const g=document.createElement('div'); g.className='paso-g';
+      g.innerHTML=`<div class="paso-c ${cls}">${hecho?'✓':(i+1)}</div><div class="paso-t">${p.fields['Paso']||''}</div>`;
+      row.appendChild(g);
+      if(i<pasos.length-1){const l=document.createElement('div');l.className='paso-linea';row.appendChild(l);}
+    });
+    container.appendChild(row);
+  }catch(e){}
+}
+
+async function loadPendientes(){
+  const container=document.getElementById('pendientes-container');
+  container.innerHTML='<div class="big-spinner"></div>';
+  try{
+    const data=await airtableRequest('GET','Tareas?sort%5B0%5D%5Bfield%5D=Urgente&sort%5B0%5D%5Bdirection%5D=desc');
+    const records=data.records||[];
+    const pending=records.filter(r=>r.fields['Estado']!=='Hecho');
+    if(!pending.length){container.innerHTML='<div class="loading-state">No hay pendientes. ¡Don está contento!</div>';return;}
+
+    const wrap=document.createElement('div');
+
+    // AHORA MISMO — urgentes + deadlines que vencen hoy/mañana
+    const urgentes=pending.filter(r=>{
+      if(r.fields['Urgente']&&r.fields['Tipo']!=='Deadline') return true;
+      if(r.fields['Tipo']==='Deadline'){const d=diasRestantes(r.fields['Fecha límite']);return d!==null&&d<=1;}
+      return false;
+    });
+
+    if(urgentes.length>0){
+      const t=document.createElement('div'); t.className='sec-title';
+      t.innerHTML=`ahora mismo <span class="badge">${urgentes.length}</span>`; wrap.appendChild(t);
+      urgentes.forEach(r=>{ const card=makeCardA(r,true); wrap.appendChild(card); });
+    }
+
+    // Por tipo
+    const tipos=[
+      {key:'Pregunta',label:'preguntas pendientes',filter:r=>r.fields['Tipo']==='Pregunta'&&r.fields['Estado']!=='Hecho'},
+      {key:'Deadline',label:'deadlines',filter:r=>r.fields['Tipo']==='Deadline'&&!urgentes.includes(r)},
+      {key:'Correo',label:'correos',filter:r=>r.fields['Tipo']==='Correo'&&r.fields['Estado']!=='Hecho'},
+      {key:'Tarea',label:'tareas',filter:r=>r.fields['Tipo']==='Tarea'&&!r.fields['Urgente']},
+    ];
+
+    tipos.forEach(({label,filter})=>{
+      const items=pending.filter(filter).filter(r=>!urgentes.includes(r));
+      if(!items.length) return;
+      const t=document.createElement('div'); t.className='sec-title'; t.textContent=label; wrap.appendChild(t);
+      items.forEach(r=>{ const card=makeCardA(r,false); wrap.appendChild(card); });
+    });
+
+    container.innerHTML=''; container.appendChild(wrap);
+    // Load threads and pasos
+    pending.forEach(r=>{
+      const convoEl=document.getElementById('convo-a-'+r.id);
+      const prevEl=document.getElementById('prev-a-'+r.id);
+      const lblEl=document.getElementById('lbl-a-'+r.id);
+      if(convoEl) loadThreadComments(r.id,convoEl,prevEl,lblEl);
+    });
+
+    // Notif dot
+    const hasUrgent = urgentes.length>0;
+    if(hasUrgent) document.getElementById('notif-pendientes').style.display='block';
+
+  }catch(e){ container.innerHTML=`<div class="loading-state">Error: ${e.message}</div>`; }
+}
+
+function makeCardA(r, isUrgente) {
+  const f=r.fields;
+  const d=r.fields['Tipo']==='Deadline'?diasRestantes(f['Fecha límite']):null;
+  const card=document.createElement('div');
+
+  let cardClass='tarea-card';
+  if(isUrgente||f['Urgente']) cardClass='tarea-card urgente';
+  else if(f['Tipo']==='Deadline'&&d!==null&&d<=1) cardClass='tarea-card deadline-fire';
+  else if(f['Tipo']==='Deadline'&&d!==null&&d<=7) cardClass='tarea-card deadline-warn';
+  else if(f['Tipo']==='Pregunta') cardClass='tarea-card pregunta';
+  card.className=cardClass;
+
+  const tipoBadge={Tarea:'tipo-tarea',Deadline:'tipo-deadline',Pregunta:'tipo-pregunta',Correo:'tipo-correo'};
+  const tipoLabel={Tarea:'tarea',Deadline:'deadline',Pregunta:'pregunta',Correo:'correo'};
+
+  card.innerHTML=`<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:4px;">
+    <div class="tarea-titulo">${f['Título']||''}</div>
+    ${f['Categoría']?`<span style="font-size:10px;padding:2px 8px;border-radius:10px;flex-shrink:0;background:#f5f4f0;color:#888;">${f['Categoría']}</span>`:''}
+  </div>
+  <span class="tarea-tipo-badge ${tipoBadge[f['Tipo']]||'tipo-tarea'}">${tipoLabel[f['Tipo']]||f['Tipo']}</span>
+  ${f['Descripción']?`<div style="font-size:11px;color:#888;margin-top:5px;line-height:1.4;">${f['Descripción']}</div>`:''}`;
+
+  if(f['Tipo']==='Deadline'&&d!==null){
+    const barColor=d<=1?'#E24B4A':d<=7?'#EF9F27':'#1D9E75';
+    const pct=d<=1?5:d<=7?Math.min(35,d*5):Math.min(90,d*2);
+    card.innerHTML+=`<div style="display:flex;justify-content:space-between;margin:6px 0 3px;"><span style="font-size:11px;color:#888;">vence ${fechaBonita(f['Fecha límite'])}</span><span style="font-size:11px;font-weight:500;color:${d<=1?'#A32D2D':d<=7?'#854F0B':'#085041'};">${diasLabel(d)}</span></div>
+    <div class="deadline-barra-bg"><div class="deadline-barra-fill" style="width:${pct}%;background:${barColor};"></div></div>`;
+  }
+
+  if(f['Respuesta de Michi']) card.innerHTML+=`<div class="respondio">✓ Michi: ${f['Respuesta de Michi']}</div>`;
+  if(f['Estado']==='Hecho') card.innerHTML+=`<div style="font-size:11px;color:#1D9E75;margin-top:4px;">✓ completado</div>`;
+
+  // Pasos container
+  if(f['Tipo']==='Deadline'){
+    const pasosContainer=document.createElement('div');
+    pasosContainer.style.marginTop='6px';
+    card.appendChild(pasosContainer);
+    loadPasos(r.id, pasosContainer);
+  }
+
+  const threadBox=makeThreadBox(r.id);
+  card.appendChild(threadBox);
+  return card;
+}
+
+async function loadRespuestas(){
+  const container=document.getElementById('respuestas-container');
+  container.innerHTML='<div class="big-spinner"></div>';
+  try{
+    const data=await airtableRequest('GET','Tareas?filterByFormula=NOT%28%7BRespuesta%20de%20Michi%7D%3D%22%22%29');
+    if(!data.records?.length){container.innerHTML='<div class="loading-state">Michi aún no ha respondido nada. Don espera.</div>';return;}
+    const list=document.createElement('div'); list.className='tareas-list';
+    for(const r of data.records){
+      const f=r.fields;
+      const card=document.createElement('div'); card.className='tarea-card';
+      card.innerHTML=`<div class="tarea-titulo" style="margin-bottom:4px;">${f['Título']||''}</div>
+        <div style="font-size:11px;color:#1D9E75;font-weight:500;margin-bottom:2px;">Michi respondió</div>
+        <div style="font-size:12px;color:#085041;background:#E1F5EE;padding:6px 10px;border-radius:8px;margin-bottom:4px;">${f['Respuesta de Michi']||''}</div>`;
+      const previewEl=document.createElement('div'); previewEl.className='preview-box'; previewEl.id='prev-a-'+r.id; previewEl.onclick=()=>toggleThreadA(r.id); card.appendChild(previewEl);
+      const toggleEl=document.createElement('div'); toggleEl.className='thread-toggle'; toggleEl.onclick=()=>toggleThreadA(r.id); toggleEl.innerHTML=`<span id="lbl-a-${r.id}">💬 comentar</span>`; card.appendChild(toggleEl);
+      const bodyEl=document.createElement('div'); bodyEl.className='thread-body'; bodyEl.id='body-a-'+r.id;
+      const convoEl=document.createElement('div'); convoEl.className='convo-thread'; convoEl.id='convo-a-'+r.id; bodyEl.appendChild(convoEl);
+      const replyRow=document.createElement('div'); replyRow.className='reply-row';
+      const inp=document.createElement('input'); inp.className='reply-input'; inp.placeholder='respóndele...'; inp.id='inp-a-'+r.id; inp.onkeydown=(e)=>{if(e.key==='Enter') sendReplyA(r.id);};
+      const btn=document.createElement('button'); btn.className='reply-btn'; btn.onclick=()=>sendReplyA(r.id); btn.innerHTML='<svg width="10" height="10" viewBox="0 0 12 12" fill="none"><path d="M1 6h10M7 2l4 4-4 4" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+      replyRow.appendChild(inp); replyRow.appendChild(btn); bodyEl.appendChild(replyRow); card.appendChild(bodyEl);
+      list.appendChild(card);
+      loadThreadComments(r.id,convoEl,previewEl,toggleEl.querySelector('span'));
+    }
+    container.innerHTML=''; container.appendChild(list);
+    // Show notif if Michi responded recently
+    document.getElementById('notif-respuestas').style.display='none';
+  }catch(e){ container.innerHTML=`<div class="loading-state">Error: ${e.message}</div>`; }
+}
+
+function switchScreen(name){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.nav-it').forEach(n=>n.classList.remove('active'));
+  document.getElementById('screen-'+name).classList.add('active');
+  document.getElementById('nav-'+name).classList.add('active');
+  window.scrollTo(0,0);
+  if(name==='pendientes') document.getElementById('notif-pendientes').style.display='none';
+  if(name==='respuestas') document.getElementById('notif-respuestas').style.display='none';
+}
+
+// Check notifications on load
+setTimeout(async()=>{
+  try{
+    const data=await airtableRequest('GET','Tareas?filterByFormula=NOT%28%7BRespuesta%20de%20Michi%7D%3D%22%22%29');
+    if((data.records||[]).length>0) document.getElementById('notif-respuestas').style.display='block';
+  }catch(e){}
+},1000);
+
+setTimeout(async()=>{
+  try{
+    const data=await airtableRequest('GET','Tareas?sort%5B0%5D%5Bfield%5D=Urgente&sort%5B0%5D%5Bdirection%5D=desc');
+    const records=data.records||[];
+    const hasUrgent=records.some(r=>{
+      if(r.fields['Urgente']&&r.fields['Estado']!=='Hecho') return true;
+      if(r.fields['Tipo']==='Deadline'){const d=diasRestantes(r.fields['Fecha límite']);return d!==null&&d<=1;}
+      return false;
+    });
+    if(hasUrgent) document.getElementById('notif-pendientes').style.display='block';
+  }catch(e){}
+},1500);
+
+setInterval(()=>{
+  const active=document.querySelector('.screen.active');
+  if(!active) return;
+  if(active.id==='screen-pendientes') loadPendientes();
+  else if(active.id==='screen-respuestas') loadRespuestas();
+},30000);
+</script>
+</body>
+</html>
