@@ -14,6 +14,11 @@
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body { background: #f5f4f0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; display: flex; justify-content: center; min-height: 100vh; }
+@media (min-width: 768px) {
+  body { background: #ece9e3; align-items: flex-start; padding: 24px; }
+  .app { max-width: 420px; background: #f5f4f0; border-radius: 24px; box-shadow: 0 8px 40px rgba(0,0,0,0.10); min-height: calc(100vh - 48px); }
+  .nav { border-radius: 0 0 24px 24px; max-width: 420px; }
+}
 .app { max-width: 390px; width: 100%; padding: 16px 16px 90px; }
 .header { text-align: center; padding: 20px 0 12px; }
 .greeting { font-size: 12px; color: #888; letter-spacing: 0.05em; }
@@ -490,7 +495,8 @@ async function loadHoy() {
     const todasUrgentes = [...urgentes, ...deadlinesUrgentes];
     const preguntas = records.filter(r => r.fields['Tipo']==='Pregunta' && r.fields['Estado']!=='Hecho');
     const correos = records.filter(r => r.fields['Tipo']==='Correo' && r.fields['Estado']!=='Hecho');
-    const tareas = records.filter(r => r.fields['Tipo']==='Tarea' && !r.fields['Urgente'] && r.fields['Estado']!=='Hecho');
+    const tareas = records.filter(r => r.fields['Tipo']==='Tarea' && !r.fields['Urgente']);
+    const eventos = records.filter(r => r.fields['Tipo']==='Evento' && r.fields['Estado']!=='Hecho');
 
     if (todasUrgentes.length > 0) setDon('urgencia','Don Urgencia',`Michi. DON URGENCIA. Tienes ${todasUrgentes.length} cosa${todasUrgentes.length>1?'s':''} urgente${todasUrgentes.length>1?'s':''}. Don está sudando. Muévete.`,{bg:'#FAEEDA',border:'#FAC775',color:'#633806'});
     else if (preguntas.length > 0) setDon('pendiente','Don Pendiente',`Don Pendiente tiene ${preguntas.length} pregunta${preguntas.length>1?'s':''} esperando. Don es paciente. Pero no tanto.`,{bg:'#EEEDFE',border:'#AFA9EC',color:'#3C3489'});
@@ -564,6 +570,27 @@ async function loadHoy() {
               :`<div style="font-size:11px;color:#888;margin-top:4px;">toca para responder →</div>`}
           </div>
         </div>`;
+        wrap.appendChild(card);
+      });
+    }
+
+    if (eventos.length > 0) {
+      const t = document.createElement('div');
+      t.className = 'sec-title';
+      t.textContent = '📍 eventos';
+      wrap.appendChild(t);
+      eventos.forEach(r => {
+        const f = r.fields;
+        const card = document.createElement('div');
+        card.className = 'card';
+        card.style.borderLeft = '3px solid #534AB7';
+        card.innerHTML = `<div class="row-top">
+          <div class="item-title">${f['Título']||''}</div>
+          ${f['Categoría']?`<span class="tag tag-${f['Categoría']}">${f['Categoría']}</span>`:''}
+        </div>
+        ${f['Descripción']?`<div class="item-desc">${f['Descripción']}</div>`:''}
+        ${f['Fecha límite']?`<div style="font-size:12px;color:#534AB7;font-weight:500;margin-top:4px;">📅 ${fechaBonita(f['Fecha límite'])}${f['Link']?' — <a href="'+f['Link']+'" target="_blank" style="color:#534AB7;">ver detalles →</a>':''}</div>`:''}`;
+        card.innerHTML += makeCommentBox(r.id, 'Michi');
         wrap.appendChild(card);
       });
     }
@@ -661,7 +688,7 @@ async function loadCorreos() {
             <span id="vmas-${r.id}" style="font-size:11px;color:#534AB7;cursor:pointer;margin-bottom:8px;display:inline-block;" onclick="toggleDesc('${r.id}')">ver más</span>`;
         }
 
-        if (f['Link']) card.innerHTML += `<a href="${f['Link']}" target="_blank" style="font-size:12px;color:#534AB7;display:block;margin-bottom:8px;">ver correo original →</a>`;
+        if (f['Link']) card.innerHTML += `<a href="${f['Link']}" target="_blank" style="font-size:12px;color:#534AB7;display:block;margin-bottom:8px;" onclick="openGmail(event, this.href)">ver correo original →</a>`;
         card.innerHTML += f['Respuesta de Michi']?`<span class="responded-tag">✓ ${f['Respuesta de Michi']}</span>`:`<div class="btn-row" id="cbtn-${r.id}"><div class="btn btn-si" onclick="respondCorreo(this,'${r.id}','respóndele tú')">respóndele tú</div><div class="btn btn-no" onclick="respondCorreo(this,'${r.id}','lo hago yo')">lo hago yo</div><div class="btn" onclick="respondCorreo(this,'${r.id}','archivar')">archivar</div></div>`;
         card.innerHTML += makeCommentBox(r.id,'Michi');
         wrap.appendChild(card);
@@ -735,10 +762,30 @@ function switchScreen(name) {
   const greetings = {hoy:'buenos días',deadlines:'tus fechas límite',correos:'correos importantes',historial:'historial'};
   document.getElementById('top-greeting').textContent = greetings[name]||'';
   if (name==='hoy') { document.getElementById('notif-hoy').style.display='none'; localStorage.setItem('last_seen_hoy',new Date().toISOString()); }
+  screenHistory.push(name);
+  history.pushState(null, '', window.location.href);
 }
 
 loadHoy();
+
+// Android back button navigation
+const screenHistory = ['hoy'];
+window.addEventListener('popstate', (e) => {
+  if (screenHistory.length > 1) {
+    screenHistory.pop();
+    const prev = screenHistory[screenHistory.length - 1];
+    document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+    document.querySelectorAll('.nav-it').forEach(n=>n.classList.remove('active'));
+    document.getElementById('screen-'+prev).classList.add('active');
+    document.getElementById('nav-'+prev).classList.add('active');
+    history.pushState(null, '', window.location.href);
+  }
+});
+history.pushState(null, '', window.location.href);
 setInterval(()=>{
+  // Pause refresh if user is typing
+  const focused = document.activeElement;
+  if (focused && (focused.tagName === 'INPUT' || focused.tagName === 'TEXTAREA')) return;
   const active = document.querySelector('.screen.active');
   if (!active) return;
   const id = active.id;
@@ -746,6 +793,28 @@ setInterval(()=>{
   else if (id==='screen-deadlines') loadDeadlines();
   else if (id==='screen-correos') loadCorreos();
 }, 30000);
+
+function openGmail(e, url) {
+  // Try to open Gmail app on mobile
+  if (url && url.includes('mail.google.com')) {
+    e.preventDefault();
+    // Extract message ID if possible
+    const match = url.match(/#(?:inbox|sent|all)\/([A-Za-z0-9]+)/);
+    if (match) {
+      const msgId = match[1];
+      // Try Gmail app deep link
+      const gmailApp = `googlegmail://mail?message_id=${msgId}`;
+      const fallback = url;
+      const start = Date.now();
+      window.location = gmailApp;
+      setTimeout(() => {
+        if (Date.now() - start < 1500) window.open(fallback, '_blank');
+      }, 500);
+    } else {
+      window.open(url, '_blank');
+    }
+  }
+}
 
 setTimeout(async()=>{
   try {

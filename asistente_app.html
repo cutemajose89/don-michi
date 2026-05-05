@@ -14,6 +14,11 @@
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body { background: #f5f4f0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; display: flex; justify-content: center; min-height: 100vh; }
+@media (min-width: 768px) {
+  body { background: #ece9e3; align-items: flex-start; padding: 24px; }
+  .app { max-width: 420px; background: #f5f4f0; border-radius: 24px; box-shadow: 0 8px 40px rgba(0,0,0,0.10); min-height: calc(100vh - 48px); }
+  .nav { border-radius: 0 0 24px 24px; max-width: 420px; }
+}
 .app { max-width: 390px; width: 100%; padding: 16px 16px 90px; }
 .header { text-align: center; padding: 20px 0 12px; }
 .greeting { font-size: 12px; color: #888; letter-spacing: 0.05em; }
@@ -142,6 +147,7 @@ textarea.field-input { resize: none; height: 80px; line-height: 1.5; }
       <div class="tipo-btn" id="tipo-deadline" onclick="selectTipo('deadline')"><div class="tipo-icon">📅</div><div class="tipo-label">Deadline</div><div class="tipo-desc">tiene fecha límite</div></div>
       <div class="tipo-btn" id="tipo-pregunta" onclick="selectTipo('pregunta')"><div class="tipo-icon">💬</div><div class="tipo-label">Pregunta</div><div class="tipo-desc">necesita su respuesta</div></div>
       <div class="tipo-btn" id="tipo-correo" onclick="selectTipo('correo')"><div class="tipo-icon">📩</div><div class="tipo-label">Correo</div><div class="tipo-desc">algo que llegó al mail</div></div>
+      <div class="tipo-btn" id="tipo-evento" onclick="selectTipo('evento')"><div class="tipo-icon">📍</div><div class="tipo-label">Evento</div><div class="tipo-desc">fecha, hora y lugar</div></div>
     </div>
 
     <div class="form-card" id="form-tarea">
@@ -165,6 +171,7 @@ textarea.field-input { resize: none; height: 80px; line-height: 1.5; }
       <div class="field"><div class="field-label">fecha límite</div><input class="field-input" type="date" id="d-fecha"/></div>
       <div class="field"><div class="field-label">descripción</div><textarea class="field-input" id="d-desc" placeholder="qué hay que entregar, contexto..."></textarea></div>
       <div class="field"><div class="field-label">link (si tiene)</div><input class="field-input" id="d-link" placeholder="https://..."/></div>
+      <div class="field"><div class="field-label">hora límite (opcional)</div><input class="field-input" type="time" id="d-hora"/></div>
       <div class="field"><div class="field-label">pasos a seguir</div>
         <div class="opciones-list" id="pasos-list">
           <div class="opcion-row"><input class="opcion-input paso-input" placeholder="paso 1"/></div>
@@ -213,6 +220,22 @@ textarea.field-input { resize: none; height: 80px; line-height: 1.5; }
       <div class="field"><div class="toggle-row"><div class="toggle-label">¿requiere respuesta urgente?</div><div class="toggle" id="c-urgente" onclick="toggleSwitch(this)"><div class="toggle-knob"></div></div></div></div>
       <button class="submit-btn" id="btn-correo" onclick="submitForm('correo')">agregar a la app de Michi</button>
       <div class="error-msg" id="err-correo"></div>
+    </div>
+
+    <div class="form-card" id="form-evento">
+      <div class="field"><div class="field-label">nombre del evento</div><input class="field-input" id="ev-titulo" placeholder="ej. Premio a la Excelencia Docente"/></div>
+      <div class="field"><div class="field-label">fecha</div><input class="field-input" type="date" id="ev-fecha"/></div>
+      <div class="field"><div class="field-label">hora</div><input class="field-input" type="time" id="ev-hora"/></div>
+      <div class="field"><div class="field-label">descripción o lugar</div><textarea class="field-input" id="ev-desc" placeholder="dónde es, qué hay que hacer..."></textarea></div>
+      <div class="field"><div class="field-label">link (si tiene)</div><input class="field-input" id="ev-link" placeholder="https://..."/></div>
+      <div class="field"><div class="field-label">categoría</div><div class="tags-row">
+        <div class="tag-sel tag-inv" onclick="toggleTag(this,'ev-cat')">investigación</div>
+        <div class="tag-sel tag-doc" onclick="toggleTag(this,'ev-cat')">docencia</div>
+        <div class="tag-sel tag-per" onclick="toggleTag(this,'ev-cat')">personal</div>
+        <div class="tag-sel tag-ase" onclick="toggleTag(this,'ev-cat')">asesorados</div>
+      </div></div>
+      <button class="submit-btn" id="btn-evento" onclick="submitForm('evento')">agregar a la app de Michi</button>
+      <div class="error-msg" id="err-evento"></div>
     </div>
 
     <div class="success" id="success-screen">
@@ -349,10 +372,23 @@ async function submitForm(tipo){
     fields={...fields,'Título':titulo,'Tipo':'Deadline','Descripción':document.getElementById('d-desc').value.trim(),'Categoría':cap(selectedCats['d-cat']||'')};
     const fecha=document.getElementById('d-fecha').value; if(fecha) fields['Fecha límite']=fecha;
     const link=document.getElementById('d-link').value.trim(); if(link) fields['Link']=link;
+    const hora=document.getElementById('d-hora').value;
+    if(hora&&fields['Descripción']) fields['Descripción']+='\nHora límite: '+hora;
+    else if(hora) fields['Descripción']='Hora límite: '+hora;
   } else if(tipo==='pregunta'){
     const titulo=document.getElementById('p-titulo').value.trim();
     if(!titulo){document.getElementById('p-titulo').focus();return;}
     fields={...fields,'Título':titulo,'Tipo':'Pregunta','Descripción':document.getElementById('p-desc').value.trim(),'Categoría':cap(selectedCats['p-cat']||''),'Urgente':document.getElementById('p-urgente').classList.contains('on')};
+  } else if(tipo==='evento'){
+    const titulo=document.getElementById('ev-titulo').value.trim();
+    if(!titulo){document.getElementById('ev-titulo').focus();return;}
+    const hora=document.getElementById('ev-hora').value;
+    const horaStr=hora?` a las ${hora}`:'';
+    fields={...fields,'Título':titulo,'Tipo':'Evento',
+      'Descripción':(document.getElementById('ev-desc').value.trim()+(horaStr?`\nHora: ${hora}`:'')),
+      'Categoría':cap(selectedCats['ev-cat']||'')};
+    const evFecha=document.getElementById('ev-fecha').value; if(evFecha) fields['Fecha límite']=evFecha;
+    const evLink=document.getElementById('ev-link').value.trim(); if(evLink) fields['Link']=evLink;
   } else if(tipo==='correo'){
     const de=document.getElementById('c-de').value.trim();
     const asunto=document.getElementById('c-asunto').value.trim();
@@ -400,6 +436,9 @@ function resetForm(){
   // Reset pasos list
   const pasosList=document.getElementById('pasos-list');
   if(pasosList){pasosList.innerHTML='<div class="opcion-row"><input class="opcion-input paso-input" placeholder="paso 1"/></div><div class="opcion-row"><input class="opcion-input paso-input" placeholder="paso 2"/></div>';}
+  // Clear time fields
+  const horaFields=['d-hora','ev-hora','ev-fecha'];
+  horaFields.forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
   selectedCats={};
 }
 
@@ -563,7 +602,11 @@ function makeCardA(r, isUrgente) {
 
   card.innerHTML=`<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:4px;">
     <div class="tarea-titulo">${f['Título']||''}</div>
-    ${f['Categoría']?`<span style="font-size:10px;padding:2px 8px;border-radius:10px;flex-shrink:0;background:#f5f4f0;color:#888;">${f['Categoría']}</span>`:''}
+    <div style="display:flex;align-items:center;gap:6px;flex-shrink:0;">
+      ${f['Categoría']?`<span style="font-size:10px;padding:2px 8px;border-radius:10px;background:#f5f4f0;color:#888;">${f['Categoría']}</span>`:''}
+      <span onclick="editarTarea('${r.id}','${(f['Título']||'').replace(/'/g,"\'")}','${(f['Descripción']||'').replace(/'/g,"\'")}');event.stopPropagation();" style="font-size:16px;cursor:pointer;color:#888;" title="editar">✏️</span>
+      <span onclick="eliminarTarea('${r.id}',this);event.stopPropagation();" style="font-size:16px;cursor:pointer;color:#888;" title="eliminar">🗑️</span>
+    </div>
   </div>
   <span class="tarea-tipo-badge ${tipoBadge[f['Tipo']]||'tipo-tarea'}">${tipoLabel[f['Tipo']]||f['Tipo']}</span>
   ${f['Descripción']?`<div style="font-size:11px;color:#888;margin-top:5px;line-height:1.4;">${f['Descripción']}</div>`:''}`;
@@ -621,6 +664,34 @@ async function loadRespuestas(){
   }catch(e){ container.innerHTML=`<div class="loading-state">Error: ${e.message}</div>`; }
 }
 
+async function eliminarTarea(recordId, btn) {
+  if (!confirm('¿Eliminar esta tarea?')) return;
+  const card = btn.closest('.tarea-card');
+  if (card) card.style.opacity = '0.4';
+  try {
+    await fetch(`https://api.airtable.com/v0/${BASE_ID}/Tareas/${recordId}`, {
+      method: 'DELETE',
+      headers: {'Authorization': `Bearer ${TOKEN}`}
+    });
+    if (card) card.remove();
+  } catch(e) {
+    if (card) card.style.opacity = '1';
+    alert('Error al eliminar');
+  }
+}
+
+function editarTarea(recordId, titulo, desc) {
+  const nuevoTitulo = prompt('Editar título:', titulo);
+  if (nuevoTitulo === null) return;
+  const nuevaDesc = prompt('Editar descripción:', desc);
+  if (nuevaDesc === null) return;
+  fetch(`https://api.airtable.com/v0/${BASE_ID}/Tareas/${recordId}`, {
+    method: 'PATCH',
+    headers: {'Authorization': `Bearer ${TOKEN}`, 'Content-Type': 'application/json'},
+    body: JSON.stringify({fields: {'Título': nuevoTitulo, 'Descripción': nuevaDesc}})
+  }).then(() => loadPendientes()).catch(() => alert('Error al editar'));
+}
+
 function switchScreen(name){
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
   document.querySelectorAll('.nav-it').forEach(n=>n.classList.remove('active'));
@@ -629,7 +700,24 @@ function switchScreen(name){
   window.scrollTo(0,0);
   if(name==='pendientes') document.getElementById('notif-pendientes').style.display='none';
   if(name==='respuestas') document.getElementById('notif-respuestas').style.display='none';
+  screenHistoryA.push(name);
+  history.pushState(null, '', window.location.href);
 }
+
+// Android back button
+const screenHistoryA = ['agregar'];
+window.addEventListener('popstate', () => {
+  if (screenHistoryA.length > 1) {
+    screenHistoryA.pop();
+    const prev = screenHistoryA[screenHistoryA.length - 1];
+    document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+    document.querySelectorAll('.nav-it').forEach(n=>n.classList.remove('active'));
+    document.getElementById('screen-'+prev).classList.add('active');
+    document.getElementById('nav-'+prev).classList.add('active');
+    history.pushState(null, '', window.location.href);
+  }
+});
+history.pushState(null, '', window.location.href);
 
 // Check notifications on load
 setTimeout(async()=>{
@@ -653,6 +741,8 @@ setTimeout(async()=>{
 },1500);
 
 setInterval(()=>{
+  const focused = document.activeElement;
+  if (focused && (focused.tagName==='INPUT'||focused.tagName==='TEXTAREA')) return;
   const active=document.querySelector('.screen.active');
   if(!active) return;
   if(active.id==='screen-pendientes') loadPendientes();
