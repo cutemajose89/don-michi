@@ -92,6 +92,7 @@ textarea.field-input { resize: none; height: 80px; line-height: 1.5; }
 .tarea-card.deadline-fire { border-color: #F09595; background: #FCEBEB; }
 .tarea-card.deadline-warn { border-color: #FAC775; background: #FAEEDA; }
 .tarea-card.pregunta { border-color: #AFA9EC; background: #F5F4FF; }
+.tarea-card.tarea-yellow { border-color: #FAC775; background: #FFFBF0; }
 .tarea-titulo { font-size: 13px; font-weight: 500; color: #1a1a1a; line-height: 1.4; margin-bottom: 3px; }
 .tarea-meta { font-size: 11px; color: #888; }
 .tarea-tipo-badge { font-size: 10px; padding: 2px 8px; border-radius: 10px; display: inline-block; margin-top: 4px; }
@@ -583,20 +584,55 @@ async function loadPendientes(){
       items.forEach(r=>{ const card=makeCardA(r,false); wrap.appendChild(card); });
     });
 
-    container.innerHTML=''; container.appendChild(wrap);
-    // Load threads and pasos
-    pending.forEach(r=>{
-      const convoEl=document.getElementById('convo-a-'+r.id);
-      const prevEl=document.getElementById('prev-a-'+r.id);
-      const lblEl=document.getElementById('lbl-a-'+r.id);
-      if(convoEl) loadThreadComments(r.id,convoEl,prevEl,lblEl);
-    });
-
+    tareasOrden = pending;
+    renderPendientes(pending);
     // Notif dot
-    const hasUrgent = urgentes.length>0;
-    if(hasUrgent) document.getElementById('notif-pendientes').style.display='block';
+    if(urgentes.length>0) document.getElementById('notif-pendientes').style.display='block';
 
   }catch(e){ container.innerHTML=`<div class="loading-state">Error: ${e.message}</div>`; }
+}
+
+function renderPendientes(records) {
+  const container=document.getElementById('pendientes-container');
+  if(!container) return;
+  const pending = records.filter(r=>r.fields['Estado']!=='Hecho');
+  if(!pending.length){container.innerHTML='<div class="loading-state">No hay pendientes. ¡Don está contento!</div>';return;}
+
+  const wrap=document.createElement('div');
+  const urgentes=pending.filter(r=>{
+    if(r.fields['Urgente']&&r.fields['Tipo']!=='Deadline') return true;
+    if(r.fields['Tipo']==='Deadline'){const d=diasRestantes(r.fields['Fecha límite']);return d!==null&&d<=1;}
+    return false;
+  });
+
+  if(urgentes.length>0){
+    const t=document.createElement('div'); t.className='sec-title';
+    t.innerHTML=`ahora mismo <span class="badge">${urgentes.length}</span>`; wrap.appendChild(t);
+    urgentes.forEach(r=>{ wrap.appendChild(makeCardA(r,true)); });
+  }
+
+  const tipos=[
+    {label:'preguntas pendientes',filter:r=>r.fields['Tipo']==='Pregunta'&&r.fields['Estado']!=='Hecho'},
+    {label:'deadlines',filter:r=>r.fields['Tipo']==='Deadline'&&!urgentes.includes(r)},
+    {label:'correos',filter:r=>r.fields['Tipo']==='Correo'&&r.fields['Estado']!=='Hecho'},
+    {label:'eventos',filter:r=>r.fields['Tipo']==='Evento'&&r.fields['Estado']!=='Hecho'},
+    {label:'tareas',filter:r=>r.fields['Tipo']==='Tarea'&&!r.fields['Urgente']},
+  ];
+
+  tipos.forEach(({label,filter})=>{
+    const items=pending.filter(filter).filter(r=>!urgentes.includes(r));
+    if(!items.length) return;
+    const t=document.createElement('div'); t.className='sec-title'; t.textContent=label; wrap.appendChild(t);
+    items.forEach(r=>wrap.appendChild(makeCardA(r,false)));
+  });
+
+  container.innerHTML=''; container.appendChild(wrap);
+  pending.forEach(r=>{
+    const convoEl=document.getElementById('convo-a-'+r.id);
+    const prevEl=document.getElementById('prev-a-'+r.id);
+    const lblEl=document.getElementById('lbl-a-'+r.id);
+    if(convoEl) loadThreadComments(r.id,convoEl,prevEl,lblEl);
+  });
 }
 
 function makeCardA(r, isUrgente) {
@@ -609,6 +645,7 @@ function makeCardA(r, isUrgente) {
   else if(f['Tipo']==='Deadline'&&d!==null&&d<=1) cardClass='tarea-card deadline-fire';
   else if(f['Tipo']==='Deadline'&&d!==null&&d<=7) cardClass='tarea-card deadline-warn';
   else if(f['Tipo']==='Pregunta') cardClass='tarea-card pregunta';
+  else if(f['Tipo']==='Tarea') cardClass='tarea-card tarea-yellow';
   card.className=cardClass;
 
   const tipoBadge={Tarea:'tipo-tarea',Deadline:'tipo-deadline',Pregunta:'tipo-pregunta',Correo:'tipo-correo'};
@@ -668,8 +705,13 @@ function makeCardA(r, isUrgente) {
 
   // ── Delete icon — bottom right corner ──
   const footer=document.createElement('div');
-  footer.style.cssText='display:flex;justify-content:flex-end;margin-top:6px;';
-  footer.innerHTML=`<span onclick="eliminarTarea('${r.id}',this);event.stopPropagation();" style="font-size:16px;cursor:pointer;opacity:0.25;">🗑️</span>`;
+  footer.style.cssText='display:flex;justify-content:space-between;align-items:center;margin-top:6px;';
+  footer.innerHTML=`
+    <div style="display:flex;gap:4px;">
+      <span onclick="moverTarea('${r.id}','up');event.stopPropagation();" style="font-size:16px;cursor:pointer;opacity:0.3;line-height:1;" title="subir">↑</span>
+      <span onclick="moverTarea('${r.id}','down');event.stopPropagation();" style="font-size:16px;cursor:pointer;opacity:0.3;line-height:1;" title="bajar">↓</span>
+    </div>
+    <span onclick="eliminarTarea('${r.id}',this);event.stopPropagation();" style="font-size:16px;cursor:pointer;opacity:0.25;">🗑️</span>`;
   card.appendChild(footer);
 
   // Pasos container
@@ -713,6 +755,18 @@ async function loadRespuestas(){
     // Show notif if Michi responded recently
     document.getElementById('notif-respuestas').style.display='none';
   }catch(e){ container.innerHTML=`<div class="loading-state">Error: ${e.message}</div>`; }
+}
+
+let tareasOrden = [];
+
+function moverTarea(recordId, dir) {
+  const idx = tareasOrden.findIndex(r => r.id === recordId);
+  if (idx === -1) return;
+  const newIdx = dir === 'up' ? idx - 1 : idx + 1;
+  if (newIdx < 0 || newIdx >= tareasOrden.length) return;
+  // Swap
+  [tareasOrden[idx], tareasOrden[newIdx]] = [tareasOrden[newIdx], tareasOrden[idx]];
+  renderPendientes(tareasOrden);
 }
 
 function toggleCardBody(recordId) {
@@ -827,21 +881,22 @@ async function guardarEdicion(recordId, tipo) {
   };
   
   const fechaEl = document.getElementById('edit-fecha');
-  if (fechaEl && fechaEl.value) fields['Fecha límite'] = fechaEl.value;
+  if (fechaEl) fields['Fecha límite'] = fechaEl.value || null;
   
   const linkEl = document.getElementById('edit-link');
-  if (linkEl) fields['Link'] = linkEl.value.trim();
+  if (linkEl) fields['Link'] = linkEl.value.trim() || null;
   
   try {
-    await fetch(`https://api.airtable.com/v0/${BASE_ID}/Tareas/${recordId}`, {
+    const res = await fetch(`https://api.airtable.com/v0/${BASE_ID}/Tareas/${recordId}`, {
       method: 'PATCH',
       headers: {'Authorization': `Bearer ${TOKEN}`, 'Content-Type': 'application/json'},
       body: JSON.stringify({fields})
     });
+    if (!res.ok) { const e = await res.json(); throw new Error(e.error?.message||'Error'); }
     document.getElementById('edit-modal').remove();
     loadPendientes();
   } catch(e) {
-    alert('Error al guardar');
+    alert('Error al guardar: ' + e.message);
   }
 }
 
@@ -856,6 +911,16 @@ function switchScreen(name){
   screenHistoryA.push(name);
   history.pushState(null, '', window.location.href);
 }
+
+// Disable autocomplete on all inputs globally
+document.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('input, textarea').forEach(el => {
+    el.setAttribute('autocomplete', 'off');
+    el.setAttribute('autocorrect', 'off');
+    el.setAttribute('autocapitalize', 'off');
+    el.setAttribute('spellcheck', 'false');
+  });
+});
 
 // Android back button
 const screenHistoryA = ['agregar'];
@@ -896,6 +961,8 @@ setTimeout(async()=>{
 setInterval(()=>{
   const focused = document.activeElement;
   if (focused && (focused.tagName==='INPUT'||focused.tagName==='TEXTAREA')) return;
+  // Only refresh if not scrolled (user not reading)
+  if (window.scrollY > 100) return;
   const active=document.querySelector('.screen.active');
   if(!active) return;
   if(active.id==='screen-pendientes') loadPendientes();

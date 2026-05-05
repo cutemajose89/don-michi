@@ -313,10 +313,20 @@ async function sendThreadComment(inputEl, quien) {
 async function respondBtn(btn, recordId, valor) {
   event.stopPropagation();
   const row = btn.closest('.btn-row');
-  row.innerHTML = `<span class="responded-tag">✓ ${valor}</span>`;
+  row.innerHTML = `<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+    <span class="responded-tag">✓ ${valor}</span>
+    <span onclick="deshacerRespuesta('${recordId}',this);event.stopPropagation();" style="font-size:11px;color:#888;cursor:pointer;text-decoration:underline;">cambiar</span>
+  </div>`;
   await apiPatch('Tareas', recordId, {'Respuesta de Michi':valor,'Estado':'Hecho'});
   const badge = document.getElementById('q-badge');
   if (badge) { let n=Math.max(0,parseInt(badge.textContent)-1); badge.textContent=n; if(n===0) badge.classList.add('badge-ok'); }
+}
+
+async function deshacerRespuesta(recordId, el) {
+  const wrap = el.parentElement;
+  const originalBtns = wrap.closest('[id]');
+  wrap.innerHTML = `<div class="btn-row"><div class="btn btn-si" onclick="respondBtn(this,'${recordId}','sí')">sí</div><div class="btn btn-no" onclick="respondBtn(this,'${recordId}','no')">no</div><div class="btn" onclick="respondBtn(this,'${recordId}','después')">después</div></div>`;
+  await apiPatch('Tareas', recordId, {'Respuesta de Michi': '', 'Estado': 'Pendiente'});
 }
 
 async function toggleCheck(el, recordId) {
@@ -400,11 +410,35 @@ function makeDeadlineCard(r, forHoy) {
   // Load pasos with click to mark done
   loadPasos(r.id, pasosWrap, true);
 
+  // Mark as done button for Michi
+  if (!forHoy) {
+    const doneWrap = document.createElement('div');
+    doneWrap.style.cssText = 'display:flex;justify-content:space-between;align-items:center;margin-top:8px;padding-top:8px;border-top:0.5px solid #f0ede8;';
+    const isDone = f['Estado'] === 'Hecho';
+    doneWrap.innerHTML = isDone
+      ? `<span style="font-size:12px;color:#1D9E75;font-weight:500;">✓ completado</span>
+         <span onclick="marcarDeadlinePendiente('${r.id}',this);event.stopPropagation();" style="font-size:11px;color:#888;cursor:pointer;text-decoration:underline;">deshacer</span>`
+      : `<span style="font-size:11px;color:#888;">¿Lo terminaste?</span>
+         <span onclick="marcarDeadlineHecho('${r.id}',this);event.stopPropagation();" style="font-size:12px;cursor:pointer;background:#E1F5EE;color:#085041;padding:5px 12px;border-radius:12px;border:0.5px solid #5DCAA5;">✓ marcar como hecho</span>`;
+    card.appendChild(doneWrap);
+  }
+
   const commentBox = document.createElement('div');
   commentBox.innerHTML = makeCommentBox(r.id, 'Michi');
   card.appendChild(commentBox);
 
   return card;
+}
+
+async function marcarDeadlineHecho(recordId, btn) {
+  btn.textContent = '...';
+  await apiPatch('Tareas', recordId, {'Estado': 'Hecho'});
+  loadDeadlines();
+}
+
+async function marcarDeadlinePendiente(recordId, btn) {
+  await apiPatch('Tareas', recordId, {'Estado': 'Pendiente'});
+  loadDeadlines();
 }
 
 async function loadMiniPasos(tareaId, container) {
@@ -538,7 +572,12 @@ async function loadHoy() {
         card.innerHTML = `<div class="cat-mini"><div class="cat-label">${f['Categoría']||''}</div></div>
           <div class="item-title" style="margin-bottom:4px;">${f['Título']||''}</div>
           ${f['Descripción']?`<div class="item-desc">${f['Descripción']}</div>`:''}
-          ${f['Respuesta de Michi']?`<span class="responded-tag">✓ ${f['Respuesta de Michi']}</span>`:`<div class="btn-row"><div class="btn btn-si" onclick="respondBtn(this,'${r.id}','sí')">sí</div><div class="btn btn-no" onclick="respondBtn(this,'${r.id}','no')">no</div><div class="btn" onclick="respondBtn(this,'${r.id}','después')">después</div></div>`}
+          ${f['Respuesta de Michi']
+  ? `<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+      <span class="responded-tag">✓ ${f['Respuesta de Michi']}</span>
+      <span onclick="deshacerRespuesta('${r.id}',this);event.stopPropagation();" style="font-size:11px;color:#888;cursor:pointer;text-decoration:underline;">cambiar</span>
+    </div>`
+  : `<div class="btn-row"><div class="btn btn-si" onclick="respondBtn(this,'${r.id}','sí')">sí</div><div class="btn btn-no" onclick="respondBtn(this,'${r.id}','no')">no</div><div class="btn" onclick="respondBtn(this,'${r.id}','después')">después</div></div>`}
           ${makeCommentBox(r.id,'Michi')}`;
         wrap.appendChild(card);
       });
@@ -602,14 +641,16 @@ async function loadHoy() {
       wrap.appendChild(t);
       const cardWrap = document.createElement('div');
       cardWrap.className = 'card';
+      cardWrap.style.cssText = 'border-color:#FAC775;background:#FFFBF0;';
       tareas.forEach(r => {
         const f = r.fields;
         const done = f['Estado']==='Hecho';
         const item = document.createElement('div');
         item.className = 'check-item';
+        item.style.cssText = '';
         item.onclick = () => toggleCheck(item, r.id);
-        item.innerHTML = `<div class="check ${done?'done':''}">${done?'<div class="tick"></div>':''}</div>
-          <div class="check-body">
+        item.innerHTML = `<div class="check ${done?'done':''}" onclick="toggleCheck(this,'${r.id}');event.stopPropagation();">${done?'<div class="tick"></div>':''}</div>
+          <div class="check-body" style="flex:1;">
             <div class="check-txt ${done?'done':''}">${f['Título']||''}</div>
             ${f['Descripción']?`<div style="font-size:11px;color:#888;margin-top:2px;">${f['Descripción']}</div>`:''}
             ${makeCommentBox(r.id,'Michi')}
@@ -689,7 +730,14 @@ async function loadCorreos() {
         }
 
         if (f['Link']) card.innerHTML += `<a href="${f['Link']}" target="_blank" style="font-size:12px;color:#534AB7;display:block;margin-bottom:8px;" onclick="openGmail(event, this.href)">ver correo original →</a>`;
-        card.innerHTML += f['Respuesta de Michi']?`<span class="responded-tag">✓ ${f['Respuesta de Michi']}</span>`:`<div class="btn-row" id="cbtn-${r.id}"><div class="btn btn-si" onclick="respondCorreo(this,'${r.id}','respóndele tú')">respóndele tú</div><div class="btn btn-no" onclick="respondCorreo(this,'${r.id}','lo hago yo')">lo hago yo</div><div class="btn" onclick="respondCorreo(this,'${r.id}','archivar')">archivar</div></div>`;
+        if(f['Respuesta de Michi']){
+          card.innerHTML += `<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+            <span class="responded-tag">✓ ${f['Respuesta de Michi']}</span>
+            <span onclick="cambiarRespuestaCorreo('${r.id}',this);event.stopPropagation();" style="font-size:11px;color:#888;cursor:pointer;text-decoration:underline;">cambiar</span>
+          </div>`;
+        } else {
+          card.innerHTML += `<div class="btn-row" id="cbtn-${r.id}"><div class="btn btn-si" onclick="respondCorreo(this,'${r.id}','respóndele tú')">respóndele tú</div><div class="btn btn-no" onclick="respondCorreo(this,'${r.id}','lo hago yo')">lo hago yo</div><div class="btn" onclick="respondCorreo(this,'${r.id}','archivar')">archivar</div></div>`;
+        }
         card.innerHTML += makeCommentBox(r.id,'Michi');
         wrap.appendChild(card);
       });
@@ -731,8 +779,16 @@ function toggleDesc(id) {
 async function respondCorreo(btn, recordId, valor) {
   event.stopPropagation();
   const row = btn.closest('.btn-row');
-  row.innerHTML=`<span class="responded-tag">✓ ${valor}</span>`;
+  row.innerHTML=`<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+    <span class="responded-tag">✓ ${valor}</span>
+    <span onclick="cambiarRespuestaCorreo('${recordId}',this);event.stopPropagation();" style="font-size:11px;color:#888;cursor:pointer;text-decoration:underline;">cambiar</span>
+  </div>`;
   await apiPatch('Tareas',recordId,{'Respuesta de Michi':valor,'Estado':'Hecho'});
+}
+
+async function cambiarRespuestaCorreo(recordId, el) {
+  el.closest('div').innerHTML=`<div class="btn-row"><div class="btn btn-si" onclick="respondCorreo(this,'${recordId}','respóndele tú')">respóndele tú</div><div class="btn btn-no" onclick="respondCorreo(this,'${recordId}','lo hago yo')">lo hago yo</div><div class="btn" onclick="respondCorreo(this,'${recordId}','archivar')">archivar</div></div>`;
+  await apiPatch('Tareas', recordId, {'Respuesta de Michi': '', 'Estado': 'Pendiente'});
 }
 
 async function loadHistorial() {
@@ -783,9 +839,9 @@ window.addEventListener('popstate', (e) => {
 });
 history.pushState(null, '', window.location.href);
 setInterval(()=>{
-  // Pause refresh if user is typing
   const focused = document.activeElement;
-  if (focused && (focused.tagName === 'INPUT' || focused.tagName === 'TEXTAREA')) return;
+  if (focused && (focused.tagName==='INPUT'||focused.tagName==='TEXTAREA')) return;
+  if (window.scrollY > 100) return;
   const active = document.querySelector('.screen.active');
   if (!active) return;
   const id = active.id;
