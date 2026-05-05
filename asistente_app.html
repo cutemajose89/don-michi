@@ -614,31 +614,63 @@ function makeCardA(r, isUrgente) {
   const tipoBadge={Tarea:'tipo-tarea',Deadline:'tipo-deadline',Pregunta:'tipo-pregunta',Correo:'tipo-correo'};
   const tipoLabel={Tarea:'tarea',Deadline:'deadline',Pregunta:'pregunta',Correo:'correo'};
 
-  card.innerHTML=`<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:4px;">
+  // ── Header (always visible, tappable to expand) ──
+  const header = document.createElement('div');
+  header.style.cssText = 'display:flex;justify-content:space-between;align-items:flex-start;gap:8px;cursor:pointer;user-select:none;';
+  header.onclick = (e) => { e.stopPropagation(); toggleCardBody(r.id); };
+  header.innerHTML = `<div style="flex:1;min-width:0;">
     <div class="tarea-titulo">${f['Título']||''}</div>
-    <div style="display:flex;align-items:center;gap:6px;flex-shrink:0;">
-      ${f['Categoría']?`<span style="font-size:10px;padding:2px 8px;border-radius:10px;background:#f5f4f0;color:#888;">${f['Categoría']}</span>`:''}
-      <span onclick="editarTarea('${r.id}','${(f['Título']||'').replace(/'/g,"\'")}','${(f['Descripción']||'').replace(/'/g,"\'")}');event.stopPropagation();" style="font-size:16px;cursor:pointer;color:#888;" title="editar">✏️</span>
-    </div>
+    <span class="tarea-tipo-badge ${tipoBadge[f['Tipo']]||'tipo-tarea'}">${tipoLabel[f['Tipo']]||f['Tipo']}</span>
+    ${f['Categoría']?`<span style="font-size:10px;padding:2px 8px;border-radius:10px;background:#f5f4f0;color:#888;margin-left:4px;">${f['Categoría']}</span>`:''}
   </div>
-  <span class="tarea-tipo-badge ${tipoBadge[f['Tipo']]||'tipo-tarea'}">${tipoLabel[f['Tipo']]||f['Tipo']}</span>
-  ${f['Descripción']?`<div style="font-size:11px;color:#888;margin-top:5px;line-height:1.4;">${f['Descripción']}</div>`:''}`;
+  <span id="arr-${r.id}" style="font-size:14px;color:#bbb;flex-shrink:0;margin-top:2px;">▾</span>`;
+  card.appendChild(header);
 
+  // Deadline bar (always visible)
   if(f['Tipo']==='Deadline'&&d!==null){
     const barColor=d<=1?'#E24B4A':d<=7?'#EF9F27':'#1D9E75';
     const pct=d<=1?5:d<=7?Math.min(35,d*5):Math.min(90,d*2);
-    card.innerHTML+=`<div style="display:flex;justify-content:space-between;margin:6px 0 3px;"><span style="font-size:11px;color:#888;">vence ${fechaBonita(f['Fecha límite'])}</span><span style="font-size:11px;font-weight:500;color:${d<=1?'#A32D2D':d<=7?'#854F0B':'#085041'};">${diasLabel(d)}</span></div>
-    <div class="deadline-barra-bg"><div class="deadline-barra-fill" style="width:${pct}%;background:${barColor};"></div></div>`;
+    const barWrap=document.createElement('div');
+    barWrap.innerHTML=`<div style="display:flex;justify-content:space-between;margin:6px 0 3px;"><span style="font-size:11px;color:#888;">vence ${fechaBonita(f['Fecha límite'])}</span><span style="font-size:11px;font-weight:500;color:${d<=1?'#A32D2D':d<=7?'#854F0B':'#085041'};">${diasLabel(d)}</span></div><div class="deadline-barra-bg"><div class="deadline-barra-fill" style="width:${pct}%;background:${barColor};"></div></div>`;
+    card.appendChild(barWrap);
   }
 
-  if(f['Respuesta de Michi']) card.innerHTML+=`<div class="respondio">✓ Michi: ${f['Respuesta de Michi']}</div>`;
-  if(f['Estado']==='Hecho') card.innerHTML+=`<div style="font-size:11px;color:#1D9E75;margin-top:4px;">✓ completado</div>`;
+  // ── Body (hidden by default) ──
+  const body = document.createElement('div');
+  body.id = 'cb-'+r.id;
+  body.style.display = 'none';
 
-  // Delete button at bottom — separate from edit to avoid accidents
-  const deleteRow = document.createElement('div');
-  deleteRow.style.cssText = 'margin-top:8px;padding-top:8px;border-top:0.5px solid #f0ede8;display:flex;justify-content:flex-start;';
-  deleteRow.innerHTML = `<span onclick="eliminarTarea('${r.id}',this);event.stopPropagation();" style="font-size:18px;cursor:pointer;opacity:0.35;" title="eliminar">🗑️</span>`;
-  card.appendChild(deleteRow);
+  if(f['Descripción']){
+    const desc=document.createElement('div');
+    desc.style.cssText='font-size:12px;color:#888;line-height:1.5;margin:8px 0;';
+    desc.textContent=f['Descripción'];
+    body.appendChild(desc);
+  }
+  if(f['Respuesta de Michi']){
+    const resp=document.createElement('div');
+    resp.className='respondio'; resp.textContent='✓ Michi: '+f['Respuesta de Michi'];
+    body.appendChild(resp);
+  }
+  if(f['Estado']==='Hecho'){
+    const done=document.createElement('div');
+    done.style.cssText='font-size:11px;color:#1D9E75;margin-top:4px;';
+    done.textContent='✓ completado';
+    body.appendChild(done);
+  }
+
+  // Edit button inside body
+  const editBtn=document.createElement('div');
+  editBtn.style.cssText='margin-top:8px;';
+  editBtn.innerHTML=`<span onclick="editarTarea('${r.id}');event.stopPropagation();" style="font-size:12px;cursor:pointer;color:#534AB7;padding:4px 12px;border:0.5px solid #534AB7;border-radius:10px;">✏️ editar</span>`;
+  body.appendChild(editBtn);
+
+  card.appendChild(body);
+
+  // ── Delete icon — bottom right corner ──
+  const footer=document.createElement('div');
+  footer.style.cssText='display:flex;justify-content:flex-end;margin-top:6px;';
+  footer.innerHTML=`<span onclick="eliminarTarea('${r.id}',this);event.stopPropagation();" style="font-size:16px;cursor:pointer;opacity:0.25;">🗑️</span>`;
+  card.appendChild(footer);
 
   // Pasos container
   if(f['Tipo']==='Deadline'){
@@ -683,15 +715,13 @@ async function loadRespuestas(){
   }catch(e){ container.innerHTML=`<div class="loading-state">Error: ${e.message}</div>`; }
 }
 
-function toggleCardBody(id) {
-  const body = document.getElementById(id);
+function toggleCardBody(recordId) {
+  const body = document.getElementById('cb-'+recordId);
   if (!body) return;
   const isOpen = body.style.display !== 'none';
   body.style.display = isOpen ? 'none' : 'block';
-  // Rotate arrow
-  const cardId = id.replace('card-body-', '');
-  const arrow = document.getElementById('arrow-' + cardId);
-  if (arrow) arrow.style.transform = isOpen ? '' : 'rotate(180deg)';
+  const arrow = document.getElementById('arr-'+recordId);
+  if (arrow) { arrow.textContent = isOpen ? '▾' : '▴'; arrow.style.color = isOpen ? '#bbb' : '#534AB7'; }
 }
 
 async function eliminarTarea(recordId, btn) {
