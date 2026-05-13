@@ -1,0 +1,931 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
+<title>Escritorio de Michi</title>
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Don Michi">
+<meta name="theme-color" content="#f5f4f0">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: #f5f4f0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; display: flex; justify-content: center; min-height: 100vh; }
+.app { max-width: 390px; width: 100%; padding: 16px 16px 90px; }
+
+/* Login */
+.login-screen { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; padding: 32px; text-align: center; }
+.login-title { font-size: 28px; font-weight: 500; color: #1a1a1a; margin: 16px 0 6px; }
+.login-sub { font-size: 13px; color: #888; margin-bottom: 32px; }
+.login-btns { display: flex; flex-direction: column; gap: 10px; width: 100%; max-width: 280px; }
+.login-btn { padding: 14px; border-radius: 16px; border: 0.5px solid #e8e5e0; background: white; font-size: 15px; font-weight: 500; cursor: pointer; color: #1a1a1a; transition: all 0.15s; }
+.login-btn:hover { background: #f0ede8; }
+.login-btn.michi { background: #1a1a1a; color: white; border-color: #1a1a1a; }
+
+/* Header */
+.header { text-align: center; padding: 16px 0 10px; }
+.greeting { font-size: 12px; color: #888; letter-spacing: 0.05em; }
+.name { font-size: 22px; font-weight: 500; color: #1a1a1a; margin: 3px 0; }
+.date-line { font-size: 12px; color: #888; }
+.user-chip { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; color: #888; background: white; border: 0.5px solid #e8e5e0; border-radius: 20px; padding: 3px 10px; cursor: pointer; margin-top: 4px; }
+
+/* Don */
+.don-row { display: flex; align-items: flex-end; gap: 10px; margin: 10px 0 6px; }
+.don-name { font-size: 10px; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; text-align: center; margin-bottom: 4px; }
+.bubble { border-radius: 14px 14px 14px 2px; padding: 10px 13px; font-size: 13px; line-height: 1.5; flex: 1; }
+
+/* Section titles */
+.sec-title { font-size: 10px; font-weight: 500; color: #888; letter-spacing: 0.07em; text-transform: uppercase; margin: 16px 0 8px; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.badge { font-size: 10px; background: #D4537E; color: white; padding: 1px 7px; border-radius: 10px; }
+.badge-ok { background: #1D9E75 !important; }
+
+/* Filter bar */
+.filter-bar { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 4px; margin-bottom: 12px; scrollbar-width: none; }
+.filter-bar::-webkit-scrollbar { display: none; }
+.filter-chip { font-size: 11px; padding: 5px 12px; border-radius: 20px; border: 0.5px solid #e8e5e0; background: white; color: #888; cursor: pointer; white-space: nowrap; flex-shrink: 0; transition: all 0.15s; }
+.filter-chip.active { font-weight: 500; }
+.fc-all.active{background:#1a1a1a;color:white;border-color:#1a1a1a;}
+.fc-Investigación.active{background:#EEEDFE;color:#3C3489;border-color:#AFA9EC;}
+.fc-Docencia.active{background:#E6F1FB;color:#0C447C;border-color:#93C4EC;}
+.fc-Salud.active{background:#EAF3DE;color:#3B6D11;border-color:#8DC95A;}
+.fc-Personal.active{background:#FBEAF0;color:#72243E;border-color:#ED93B1;}
+.fc-Admin.active{background:#F1EFE8;color:#444;border-color:#C4B99A;}
+.fc-Asesorados.active{background:#FFF3E0;color:#7B4800;border-color:#FFB74D;}
+.fc-Laureate.active{background:#1a1a1a;color:white;border-color:#1a1a1a;}
+
+/* Cards */
+.card { background: white; border: 0.5px solid #e8e5e0; border-radius: 16px; padding: 13px 14px; margin-bottom: 9px; }
+.card-fire { border-color: #F09595 !important; background: #FCEBEB !important; }
+.card-warn { border-color: #FAC775 !important; background: #FAEEDA !important; }
+.card-tarea { border-color: #FAC775 !important; background: #FFFBF0 !important; }
+.card-laureate { border-left: 3px solid #1a1a1a !important; }
+.row-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; margin-bottom: 4px; }
+.item-title { font-size: 14px; font-weight: 500; color: #1a1a1a; flex: 1; line-height: 1.4; }
+.item-desc { font-size: 12px; color: #888; line-height: 1.5; margin-bottom: 8px; }
+.tag { font-size: 10px; padding: 2px 8px; border-radius: 10px; flex-shrink: 0; }
+.tag-Investigación,.tag-investigación{background:#EEEDFE;color:#3C3489;}
+.tag-Docencia,.tag-docencia{background:#E6F1FB;color:#0C447C;}
+.tag-Salud,.tag-salud{background:#EAF3DE;color:#3B6D11;}
+.tag-Personal,.tag-personal{background:#FBEAF0;color:#72243E;}
+.tag-Admin,.tag-admin{background:#F1EFE8;color:#444;}
+.tag-Asesorados,.tag-asesorados{background:#FFF3E0;color:#7B4800;}
+.tag-Laureate,.tag-laureate{background:#1a1a1a;color:white;}
+
+/* Deadline */
+.deadline-row { display: flex; justify-content: space-between; margin-bottom: 4px; }
+.deadline-txt { font-size: 11px; color: #888; }
+.deadline-dias { font-size: 11px; font-weight: 500; }
+.d-fire{color:#A32D2D;} .d-warn{color:#854F0B;} .d-ok{color:#085041;}
+.barra-bg { height: 5px; background: rgba(0,0,0,0.07); border-radius: 3px; overflow: hidden; margin-bottom: 8px; }
+.barra-fill { height: 100%; border-radius: 3px; transition: width 0.3s; }
+.b-fire{background:#E24B4A;} .b-warn{background:#EF9F27;} .b-ok{background:#1D9E75;}
+
+/* Pasos */
+.pasos-row { display: flex; align-items: center; gap: 2px; margin-bottom: 8px; }
+.paso-g { display: flex; flex-direction: column; align-items: center; gap: 3px; }
+.paso-c { width: 22px; height: 22px; border-radius: 50%; border: 1.5px solid #ccc; font-size: 9px; display: flex; align-items: center; justify-content: center; color: #888; flex-shrink: 0; cursor: pointer; }
+.paso-c.hecho { background: #1D9E75; border-color: #1D9E75; color: white; }
+.paso-c.activo { border-color: #EF9F27; color: #854F0B; font-weight: 600; }
+.paso-t { font-size: 9px; color: #888; max-width: 52px; text-align: center; line-height: 1.3; }
+.paso-linea { flex: 1; height: 1px; background: #e8e5e0; min-width: 6px; }
+
+/* Buttons */
+.btn-row { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px; }
+.btn { font-size: 12px; padding: 6px 12px; border-radius: 16px; border: 0.5px solid #e0ddd8; background: transparent; color: #1a1a1a; cursor: pointer; }
+.btn-si{background:#E1F5EE;border-color:#5DCAA5;color:#085041;}
+.btn-no{background:#FCEBEB;border-color:#F09595;color:#791F1F;}
+.responded-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-top: 6px; }
+.responded-tag { font-size: 11px; color: #085041; background: #E1F5EE; padding: 3px 10px; border-radius: 10px; }
+.cambiar-btn { font-size: 11px; color: #888; cursor: pointer; text-decoration: underline; }
+
+/* Check items */
+.check-item { display: flex; align-items: flex-start; gap: 10px; padding: 9px 0; border-bottom: 0.5px solid #f0ede8; }
+.check-item:last-child { border-bottom: none; }
+.check { width: 20px; height: 20px; border-radius: 50%; border: 1.5px solid #ccc; flex-shrink: 0; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+.check.done { background: #1D9E75; border-color: #1D9E75; }
+.tick { width: 8px; height: 5px; border-left: 2px solid white; border-bottom: 2px solid white; transform: rotate(-45deg) translateY(-1px); }
+.check-body { flex: 1; }
+.check-txt { font-size: 13px; color: #1a1a1a; }
+.check-txt.done { color: #aaa; text-decoration: line-through; }
+
+/* Thread */
+.thread-toggle { font-size: 11px; color: #888; cursor: pointer; display: flex; align-items: center; gap: 4px; margin-top: 6px; user-select: none; }
+.thread-body { display: none; margin-top: 4px; }
+.thread-body.open { display: block; }
+.thread-dot { width: 6px; height: 6px; border-radius: 50%; background: #D4537E; display: inline-block; margin-left: 3px; vertical-align: middle; }
+.convo { display: flex; flex-direction: column; gap: 4px; margin-bottom: 6px; }
+.msg-a .msg-bub { background: #f5f4f0; border: 0.5px solid #e8e5e0; border-radius: 10px 10px 10px 2px; padding: 6px 10px; font-size: 11px; color: #888; display: inline-block; max-width: 90%; line-height: 1.4; }
+.msg-m { display: flex; justify-content: flex-end; }
+.msg-m .msg-bub { background: #EEEDFE; border: 0.5px solid #AFA9EC; border-radius: 10px 10px 2px 10px; padding: 6px 10px; font-size: 11px; color: #3C3489; display: inline-block; max-width: 90%; line-height: 1.4; }
+.add-comment { margin-top: 4px; display: flex; gap: 5px; align-items: center; }
+.comment-input { flex: 1; font-size: 11px; padding: 4px 9px; border-radius: 12px; border: 0.5px solid #e0ddd8; background: #f9f8f5; color: #1a1a1a; outline: none; font-family: inherit; height: 26px; }
+.comment-input::placeholder { color: #bbb; }
+.send-btn { width: 24px; height: 24px; border-radius: 50%; background: #534AB7; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+
+/* Form */
+.form-section { background: white; border: 0.5px solid #e8e5e0; border-radius: 16px; padding: 14px 15px; margin-bottom: 10px; }
+.field { margin-bottom: 13px; }
+.field-label { font-size: 11px; font-weight: 500; color: #888; letter-spacing: 0.05em; text-transform: uppercase; margin-bottom: 5px; }
+.field-input { width: 100%; font-size: 13px; padding: 8px 11px; border-radius: 10px; border: 0.5px solid #e8e5e0; background: #f9f8f5; color: #1a1a1a; outline: none; font-family: inherit; }
+.field-input:focus { border-color: #534AB7; }
+.field-input::placeholder { color: #bbb; }
+textarea.field-input { resize: none; height: 80px; line-height: 1.5; }
+.tags-row { display: flex; gap: 6px; flex-wrap: wrap; }
+.tag-sel { font-size: 11px; padding: 5px 12px; border-radius: 16px; border: 0.5px solid #e8e5e0; background: transparent; color: #888; cursor: pointer; }
+.tag-sel.on { font-weight: 500; }
+.tag-inv.on{background:#EEEDFE;border-color:#AFA9EC;color:#3C3489;}
+.tag-doc.on{background:#E6F1FB;border-color:#93C4EC;color:#0C447C;}
+.tag-sal.on{background:#EAF3DE;border-color:#8DC95A;color:#3B6D11;}
+.tag-per.on{background:#FBEAF0;border-color:#ED93B1;color:#72243E;}
+.tag-adm.on{background:#F1EFE8;border-color:#C4B99A;color:#444;}
+.tag-ase.on{background:#FFF3E0;border-color:#FFB74D;color:#7B4800;}
+.tag-lau.on{background:#1a1a1a;border-color:#1a1a1a;color:white;}
+.tag-accion.on{background:#E1F5EE;border-color:#5DCAA5;color:#085041;}
+.toggle-row { display: flex; align-items: center; justify-content: space-between; padding: 6px 0; }
+.toggle-label { font-size: 13px; color: #1a1a1a; }
+.toggle { width: 36px; height: 20px; border-radius: 10px; background: #e0ddd8; cursor: pointer; position: relative; transition: background 0.2s; flex-shrink: 0; }
+.toggle.on { background: #1D9E75; }
+.toggle-knob { width: 16px; height: 16px; border-radius: 50%; background: white; position: absolute; top: 2px; left: 2px; transition: left 0.2s; box-shadow: 0 1px 3px rgba(0,0,0,0.15); }
+.toggle.on .toggle-knob { left: 18px; }
+.tipo-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 7px; margin-bottom: 14px; }
+.tipo-btn { border: 0.5px solid #e8e5e0; border-radius: 14px; padding: 12px 8px; cursor: pointer; text-align: center; background: white; }
+.tipo-btn.sel { border-width: 1.5px; }
+.tipo-icon { font-size: 20px; margin-bottom: 4px; }
+.tipo-label { font-size: 11px; font-weight: 500; color: #1a1a1a; }
+.opciones-list { display: flex; flex-direction: column; gap: 5px; margin-bottom: 5px; }
+.opcion-row { display: flex; gap: 6px; }
+.opcion-input { flex: 1; font-size: 13px; padding: 6px 10px; border-radius: 10px; border: 0.5px solid #e8e5e0; background: #f9f8f5; color: #1a1a1a; outline: none; font-family: inherit; }
+.add-opcion { font-size: 12px; color: #534AB7; cursor: pointer; padding: 3px 0; }
+.submit-btn { width: 100%; padding: 13px; border-radius: 14px; background: #1a1a1a; color: white; border: none; font-size: 14px; font-weight: 500; cursor: pointer; font-family: inherit; display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 4px; }
+.submit-btn:disabled { opacity: 0.5; }
+.spinner { width: 15px; height: 15px; border: 2px solid rgba(255,255,255,0.3); border-top-color: white; border-radius: 50%; animation: spin 0.7s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.error-msg { font-size: 12px; color: #E24B4A; margin-top: 8px; display: none; padding: 8px 12px; background: #FCEBEB; border-radius: 8px; text-align: center; }
+.success { display: none; text-align: center; padding: 32px 16px; }
+.success-txt { font-size: 15px; font-weight: 500; color: #1a1a1a; margin-top: 12px; }
+.success-sub { font-size: 13px; color: #888; margin-top: 5px; }
+.otro-btn { font-size: 13px; color: #534AB7; cursor: pointer; margin-top: 14px; display: inline-block; padding: 7px 18px; border: 0.5px solid #534AB7; border-radius: 20px; }
+
+/* Modal */
+.modal-bg { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 1000; display: flex; align-items: flex-end; justify-content: center; }
+.modal-sheet { background: #f5f4f0; border-radius: 20px 20px 0 0; padding: 20px 16px 40px; width: 100%; max-width: 420px; max-height: 90vh; overflow-y: auto; }
+
+/* Misc */
+.loading-state,.empty-state { text-align: center; padding: 40px 20px; color: #888; font-size: 13px; }
+.big-spinner { width: 28px; height: 28px; border: 2px solid #e8e5e0; border-top-color: #534AB7; border-radius: 50%; animation: spin 0.7s linear infinite; margin: 40px auto; }
+.screen { display: none; }
+.screen.active { display: block; }
+.nav { display: flex; justify-content: space-around; padding: 11px 0 6px; border-top: 0.5px solid #e8e5e0; position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 390px; background: #f5f4f0; }
+.nav-it { display: flex; flex-direction: column; align-items: center; gap: 3px; cursor: pointer; padding: 3px 10px; position: relative; }
+.nav-lbl { font-size: 10px; color: #888; }
+.nav-it.active .nav-lbl { color: #1a1a1a; font-weight: 500; }
+.notif-dot { width: 7px; height: 7px; border-radius: 50%; background: #D4537E; position: absolute; top: 0; right: 6px; display: none; }
+@media (min-width: 768px) {
+  body { background: #ece9e3; padding: 24px; align-items: flex-start; }
+  .app { max-width: 480px; background: #f5f4f0; border-radius: 24px; box-shadow: 0 8px 40px rgba(0,0,0,0.10); padding: 20px 24px 100px; }
+  .nav { border-radius: 0 0 24px 24px; max-width: 480px; }
+  .item-title { font-size: 15px; }
+  .tipo-grid { grid-template-columns: repeat(5, 1fr); }
+}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="login-screen" class="login-screen">
+  <svg width="70" height="75" viewBox="0 0 100 110" fill="none">
+    <path d="M18 56 Q18 24 30 15 L33 30 Q38 26 50 26 Q62 26 67 30 L70 15 Q82 24 82 56 Q82 78 50 80 Q18 78 18 56Z" fill="#1a1a1a"/>
+    <path d="M30 15 L33 30 Q30 23 25 19Z" fill="#1a1a1a"/><path d="M70 15 L67 30 Q70 23 75 19Z" fill="#1a1a1a"/>
+    <circle cx="35" cy="52" r="9" fill="#55cc44"/><circle cx="65" cy="52" r="9" fill="#55cc44"/>
+    <circle cx="35" cy="52" r="5" fill="#1a1a1a"/><circle cx="65" cy="52" r="5" fill="#1a1a1a"/>
+    <circle cx="37" cy="49" r="2.5" fill="white"/><circle cx="67" cy="49" r="2.5" fill="white"/>
+  </svg>
+  <div class="login-title">Don Michi</div>
+  <div class="login-sub">¿quién eres hoy?</div>
+  <div class="login-btns">
+    <button class="login-btn michi" onclick="login('Michi')">Michi</button>
+    <button class="login-btn" onclick="login('Asistente')">la asistente</button>
+  </div>
+</div>
+
+<!-- APP -->
+<div class="app" id="main-app" style="display:none;">
+  <div class="header">
+    <div class="greeting" id="top-greeting">buenos días</div>
+    <div class="name" id="top-name">Michi ✦</div>
+    <div class="date-line" id="top-date"></div>
+    <div class="user-chip" onclick="logout()">
+      <span id="user-chip-name">Michi</span>
+      <span style="color:#ccc;">·</span>
+      <span style="color:#534AB7;">cambiar</span>
+    </div>
+  </div>
+
+  <div class="don-row">
+    <div>
+      <div class="don-name" id="don-name" style="color:#3C3489;">Don</div>
+      <svg id="don-svg" width="50" height="54" viewBox="0 0 100 110" fill="none">
+        <path d="M18 56 Q18 24 30 15 L33 30 Q38 26 50 26 Q62 26 67 30 L70 15 Q82 24 82 56 Q82 78 50 80 Q18 78 18 56Z" fill="#1a1a1a"/>
+        <path d="M30 15 L33 30 Q30 23 25 19Z" fill="#1a1a1a"/><path d="M70 15 L67 30 Q70 23 75 19Z" fill="#1a1a1a"/>
+        <circle cx="35" cy="52" r="9" fill="#55cc44"/><circle cx="65" cy="52" r="9" fill="#55cc44"/>
+        <circle cx="35" cy="52" r="5" fill="#1a1a1a"/><circle cx="65" cy="52" r="5" fill="#1a1a1a"/>
+        <circle cx="37" cy="49" r="2.5" fill="white"/><circle cx="67" cy="49" r="2.5" fill="white"/>
+      </svg>
+    </div>
+    <div class="bubble" id="don-bubble" style="background:#EEEDFE;border:0.5px solid #AFA9EC;color:#3C3489;">Cargando...</div>
+  </div>
+
+  <!-- SCREENS -->
+  <div class="screen active" id="screen-hoy"><div id="hoy-container"><div class="big-spinner"></div></div></div>
+  <div class="screen" id="screen-agregar">
+    <div class="sec-title">¿qué tipo de cosa es?</div>
+    <div class="tipo-grid">
+      <div class="tipo-btn" id="tipo-tarea" onclick="selectTipo('tarea')"><div class="tipo-icon">✅</div><div class="tipo-label">Tarea</div></div>
+      <div class="tipo-btn" id="tipo-deadline" onclick="selectTipo('deadline')"><div class="tipo-icon">📅</div><div class="tipo-label">Deadline</div></div>
+      <div class="tipo-btn" id="tipo-pregunta" onclick="selectTipo('pregunta')"><div class="tipo-icon">💬</div><div class="tipo-label">Pregunta</div></div>
+      <div class="tipo-btn" id="tipo-correo" onclick="selectTipo('correo')"><div class="tipo-icon">📩</div><div class="tipo-label">Correo</div></div>
+      <div class="tipo-btn" id="tipo-evento" onclick="selectTipo('evento')"><div class="tipo-icon">📍</div><div class="tipo-label">Evento</div></div>
+    </div>
+    <div id="form-area"></div>
+    <div class="success" id="success-screen">
+      <svg width="55" height="60" viewBox="0 0 100 110" fill="none">
+        <path d="M18 56 Q18 24 30 15 L33 30 Q38 26 50 26 Q62 26 67 30 L70 15 Q82 24 82 56 Q82 78 50 80 Q18 78 18 56Z" fill="#1a1a1a"/>
+        <path d="M30 15 L33 30 Q30 23 25 19Z" fill="#1a1a1a"/><path d="M70 15 L67 30 Q70 23 75 19Z" fill="#1a1a1a"/>
+        <clipPath id="cl"><rect x="22" y="40" width="24" height="12"/></clipPath>
+        <circle cx="34" cy="51" r="11" fill="#55cc44" clip-path="url(#cl)"/><circle cx="34" cy="51" r="7" fill="#1a1a1a" clip-path="url(#cl)"/>
+        <clipPath id="cr"><rect x="54" y="40" width="24" height="12"/></clipPath>
+        <circle cx="66" cy="51" r="11" fill="#55cc44" clip-path="url(#cr)"/><circle cx="66" cy="51" r="7" fill="#1a1a1a" clip-path="url(#cr)"/>
+        <path d="M43 63 Q50 69 57 63" fill="white"/>
+      </svg>
+      <div class="success-txt">¡Listo! Ya está agregado.</div>
+      <div class="success-sub" id="success-sub">Don lo tiene en la mira.</div>
+      <div id="wa-wrap" style="display:none;margin-top:10px;">
+        <a id="wa-btn" href="#" target="_blank" style="display:inline-flex;align-items:center;gap:7px;background:#25D366;color:white;font-size:13px;font-weight:500;padding:10px 18px;border-radius:18px;text-decoration:none;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.123.554 4.118 1.522 5.849L.057 23.552a.5.5 0 00.61.61l5.699-1.465A11.945 11.945 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.892a9.88 9.88 0 01-5.031-1.378l-.36-.214-3.733.96.992-3.623-.235-.373A9.866 9.866 0 012.108 12C2.108 6.527 6.527 2.108 12 2.108S21.892 6.527 21.892 12 17.473 21.892 12 21.892z"/></svg>
+          avisar por WhatsApp
+        </a>
+      </div>
+      <div class="otro-btn" onclick="resetForm()">agregar otra cosa</div>
+    </div>
+  </div>
+  <div class="screen" id="screen-pendientes"><div id="pendientes-container"><div class="big-spinner"></div></div></div>
+  <div class="screen" id="screen-historial"><div id="historial-container"><div class="big-spinner"></div></div></div>
+
+  <div class="nav">
+    <div class="nav-it active" id="nav-hoy" onclick="switchScreen('hoy')">
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="2" y="2" width="7" height="7" rx="2" fill="#1a1a1a"/><rect x="11" y="2" width="7" height="7" rx="2" fill="#ccc"/><rect x="2" y="11" width="7" height="7" rx="2" fill="#ccc"/><rect x="11" y="11" width="7" height="7" rx="2" fill="#ccc"/></svg>
+      <div class="nav-lbl">hoy</div>
+      <div class="notif-dot" id="notif-hoy"></div>
+    </div>
+    <div class="nav-it" id="nav-agregar" onclick="switchScreen('agregar')">
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="8" stroke="#888" stroke-width="1.5"/><path d="M10 6v8M6 10h8" stroke="#888" stroke-width="1.5" stroke-linecap="round"/></svg>
+      <div class="nav-lbl">agregar</div>
+    </div>
+    <div class="nav-it" id="nav-pendientes" onclick="switchScreen('pendientes');loadPendientes();">
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="2" y="3" width="16" height="14" rx="2" stroke="#888" stroke-width="1.5"/><path d="M6 8h8M6 12h5" stroke="#888" stroke-width="1.5" stroke-linecap="round"/></svg>
+      <div class="nav-lbl">pendientes</div>
+      <div class="notif-dot" id="notif-pendientes"></div>
+    </div>
+    <div class="nav-it" id="nav-historial" onclick="switchScreen('historial');loadHistorial();">
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7" stroke="#888" stroke-width="1.5"/><path d="M10 6v4l3 2" stroke="#888" stroke-width="1.5" stroke-linecap="round"/></svg>
+      <div class="nav-lbl">historial</div>
+    </div>
+  </div>
+</div>
+
+<script>
+const TOKEN='patMCJ3Vrz8Uw32sO.9288ac142ac8780a9b1f02c10300158c138699ee85b4c11e1ee267d892161426';
+const BASE_ID='appz6fdbkJTA1S0GW';
+const diasN=['domingo','lunes','martes','miércoles','jueves','viernes','sábado'];
+const mesesN=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+const hoy=new Date();hoy.setHours(0,0,0,0);
+
+let currentUser='';
+let activeFilter='all';
+let allComments=[];
+let allPasos=[];
+let selectedCats={};
+
+// ── LOGIN ─────────────────────────────────────────────────────────────────────
+function login(user){
+  currentUser=user;
+  localStorage.setItem('donmichi_user',user);
+  document.getElementById('login-screen').style.display='none';
+  document.getElementById('main-app').style.display='block';
+  document.getElementById('user-chip-name').textContent=user;
+  document.getElementById('top-name').textContent=user==='Michi'?'Michi ✦':'tu vista ✦';
+  document.getElementById('top-date').textContent=`${diasN[hoy.getDay()]} ${hoy.getDate()} de ${mesesN[hoy.getMonth()]}`;
+  initApp();
+}
+function logout(){
+  localStorage.removeItem('donmichi_user');
+  document.getElementById('main-app').style.display='none';
+  document.getElementById('login-screen').style.display='flex';
+}
+// Auto-login
+const saved=localStorage.getItem('donmichi_user');
+if(saved)login(saved);
+
+// ── API ───────────────────────────────────────────────────────────────────────
+async function api(path,method,body){
+  const opts={method:method||'GET',headers:{'Authorization':`Bearer ${TOKEN}`,'Content-Type':'application/json'}};
+  if(body)opts.body=JSON.stringify(body);
+  const res=await fetch(`https://api.airtable.com/v0/${BASE_ID}/${path}`,opts);
+  const text=await res.text();let data;
+  try{data=JSON.parse(text);}catch(e){throw new Error('Error de red');}
+  if(!res.ok)throw new Error(data?.error?.message||`Error ${res.status}`);
+  return data;
+}
+
+// ── HELPERS ───────────────────────────────────────────────────────────────────
+function diasRestantes(f){if(!f)return null;const d=new Date(f);d.setHours(0,0,0,0);return Math.ceil((d-hoy)/86400000);}
+function fechaBonita(f){if(!f)return'';const d=new Date(f);return`${diasN[d.getDay()]} ${d.getDate()} de ${mesesN[d.getMonth()]}`;}
+function barraColor(d){if(d<=0)return{bar:'b-fire',text:'d-fire'};if(d<=1)return{bar:'b-fire',text:'d-fire'};if(d<=7)return{bar:'b-warn',text:'d-warn'};return{bar:'b-ok',text:'d-ok'};}
+function diasLabel(d){if(d===null)return'';if(d<0)return`venció hace ${Math.abs(d)} día${Math.abs(d)>1?'s':''}`;if(d===0)return'vence hoy';if(d===1)return'mañana';return`${d} días`;}
+function pctBarra(d,pasos){
+  if(pasos.length>0){const done=pasos.filter(p=>p.fields['Hecho']).length;return Math.max(3,Math.round((done/pasos.length)*100));}
+  if(d===null)return 50;if(d<=0)return 3;if(d<=1)return 5;if(d<=7)return Math.min(35,d*5);return Math.min(90,d*2);
+}
+function cap(s){return s?s.charAt(0).toUpperCase()+s.slice(1):'';}
+function sendIcon(){return`<svg width="10" height="10" viewBox="0 0 12 12" fill="none"><path d="M1 6h10M7 2l4 4-4 4" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>`;}
+
+// ── DON ───────────────────────────────────────────────────────────────────────
+function donSVG(mode){
+  const b=`<path d="M18 56 Q18 24 30 15 L33 30 Q38 26 50 26 Q62 26 67 30 L70 15 Q82 24 82 56 Q82 78 50 80 Q18 78 18 56Z" fill="#1a1a1a"/><path d="M30 15 L33 30 Q30 23 25 19Z" fill="#1a1a1a"/><path d="M70 15 L67 30 Q70 23 75 19Z" fill="#1a1a1a"/>`;
+  if(mode==='urgencia')return b+`<circle cx="35" cy="52" r="14" fill="white"/><circle cx="65" cy="52" r="14" fill="white"/><circle cx="35" cy="52" r="10" fill="#55cc44"/><circle cx="65" cy="52" r="10" fill="#55cc44"/><circle cx="35" cy="52" r="6" fill="#1a1a1a"/><circle cx="65" cy="52" r="6" fill="#1a1a1a"/><circle cx="38" cy="47" r="3.5" fill="white"/><circle cx="68" cy="47" r="3.5" fill="white"/><path d="M43 70 L50 63 L57 70" stroke="white" stroke-width="2.2" fill="none" stroke-linecap="round"/><path d="M77 18 Q79 10 82 9 Q85 11 83 18 Q81 23 77 20Z" fill="#6ec6f5"/><path d="M83 32 Q86 24 89 24 Q91 27 89 33 Q87 38 83 35Z" fill="#6ec6f5"/><path d="M23 18 Q21 10 18 9 Q15 11 17 18 Q19 23 23 20Z" fill="#6ec6f5"/><path d="M17 32 Q14 24 11 24 Q9 27 11 33 Q13 38 17 35Z" fill="#6ec6f5"/>`;
+  if(mode==='pendiente')return b+`<line x1="24" y1="51" x2="44" y2="51" stroke="white" stroke-width="3" stroke-linecap="round"/><line x1="56" y1="51" x2="76" y2="51" stroke="white" stroke-width="3" stroke-linecap="round"/><ellipse cx="50" cy="65" rx="5" ry="3.5" fill="white"/><path d="M50 68 Q50 76 50 78" stroke="white" stroke-width="2.2" fill="none" stroke-linecap="round"/><ellipse cx="50" cy="80" rx="3.5" ry="2.5" fill="white" opacity="0.9"/><circle cx="8" cy="55" r="5.5" fill="white" stroke="#1a1a1a" stroke-width="1.5"/>`;
+  if(mode==='feliz')return b+`<clipPath id="cl"><rect x="22" y="40" width="24" height="12"/></clipPath><circle cx="34" cy="51" r="11" fill="#55cc44" clip-path="url(#cl)"/><circle cx="34" cy="51" r="7" fill="#1a1a1a" clip-path="url(#cl)"/><clipPath id="cr"><rect x="54" y="40" width="24" height="12"/></clipPath><circle cx="66" cy="51" r="11" fill="#55cc44" clip-path="url(#cr)"/><circle cx="66" cy="51" r="7" fill="#1a1a1a" clip-path="url(#cr)"/><path d="M43 63 Q50 69 57 63" fill="white"/>`;
+  return b+`<circle cx="35" cy="52" r="9" fill="#55cc44"/><circle cx="65" cy="52" r="9" fill="#55cc44"/><circle cx="35" cy="52" r="5" fill="#1a1a1a"/><circle cx="65" cy="52" r="5" fill="#1a1a1a"/><circle cx="37" cy="49" r="2.5" fill="white"/><circle cx="67" cy="49" r="2.5" fill="white"/>`;
+}
+function setDon(mode,name,text,s){
+  document.getElementById('don-svg').innerHTML=donSVG(mode);
+  document.getElementById('don-name').textContent=name;
+  document.getElementById('don-name').style.color=s.color;
+  const b=document.getElementById('don-bubble');
+  b.textContent=text;
+  b.style.cssText=`background:${s.bg};border:0.5px solid ${s.border};color:${s.color};border-radius:14px 14px 14px 2px;padding:10px 13px;font-size:13px;line-height:1.5;flex:1;`;
+}
+
+// ── COMMENTS ──────────────────────────────────────────────────────────────────
+async function loadAllComments(){try{const d=await api('Comentarios?maxRecords=300');allComments=d.records||[];}catch(e){}}
+function getComments(id){
+  return allComments.filter(r=>{const t=r.fields['Tarea'];if(!t)return false;if(Array.isArray(t))return t.includes(id);return t===id;})
+    .sort((a,b)=>new Date(a.createdTime)-new Date(b.createdTime));
+}
+function makeCommentBox(id){
+  const comments=getComments(id);
+  const last=comments.length>0?comments[comments.length-1]:null;
+  const isNew=last&&((last.fields['De']==='Asistente'&&currentUser==='Michi')||(last.fields['De']==='Michi'&&currentUser==='Asistente'));
+  const convoHtml=comments.map(r=>{
+    const cls=r.fields['De']==='Michi'?'msg-m':'msg-a';
+    return`<div class="${cls}"><div class="msg-bub">${r.fields['Comentario']||''}</div></div>`;
+  }).join('');
+  let previewHtml='';
+  if(last){
+    const de=last.fields['De'];const txt=last.fields['Comentario']||'';
+    const bs=de==='Michi'?'background:#EEEDFE;border:0.5px solid #AFA9EC;border-radius:10px 10px 2px 10px;color:#3C3489;':'background:#f5f4f0;border:0.5px solid #e8e5e0;border-radius:10px 10px 10px 2px;color:#888;';
+    previewHtml=`<div style="cursor:pointer;margin-top:5px;display:flex;align-items:center;" onclick="event.stopPropagation();toggleThread('${id}')"><div style="font-size:11px;padding:5px 9px;${bs}max-width:86%;line-height:1.4;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${txt}</div>${isNew?'<span class="thread-dot" style="margin-left:4px;"></span>':''}</div>`;
+  }
+  const lbl=comments.length>0?`ver más mensajes${isNew?'<span class="thread-dot"></span>':''}`:'💬 comentar';
+  return`${previewHtml}
+  <div class="thread-toggle" onclick="event.stopPropagation();toggleThread('${id}')"><span id="tl-${id}">${lbl}</span></div>
+  <div class="thread-body" id="tb-${id}">
+    <div class="convo" id="cv-${id}">${convoHtml}</div>
+    <div class="add-comment" data-id="${id}">
+      <input class="comment-input" placeholder="comenta..." onclick="event.stopPropagation()" autocomplete="off"
+        onkeydown="if(event.key==='Enter'){event.stopPropagation();sendComment(this);}"/>
+      <button class="send-btn" onclick="event.stopPropagation();sendComment(this.previousElementSibling);">${sendIcon()}</button>
+    </div>
+  </div>`;
+}
+function toggleThread(id){
+  const body=document.getElementById('tb-'+id);const label=document.getElementById('tl-'+id);
+  if(!body)return;const isOpen=body.classList.contains('open');
+  body.classList.toggle('open');
+  if(label)label.textContent=isOpen?'ver más mensajes':'cerrar conversación';
+}
+async function sendComment(inp){
+  const text=inp.value.trim();if(!text)return;
+  const id=inp.closest('.add-comment').dataset.id;inp.value='';
+  const cv=document.getElementById('cv-'+id);
+  const div=document.createElement('div');
+  div.className=currentUser==='Michi'?'msg-m':'msg-a';
+  div.innerHTML=`<div class="msg-bub">${text}</div>`;
+  if(cv)cv.appendChild(div);
+  const rec=await api('Comentarios','POST',{fields:{'Comentario':text,'Tarea':[id],'De':currentUser}});
+  allComments.push(rec);
+  if(currentUser==='Michi')await api(`Tareas/${id}`,'PATCH',{fields:{'Respuesta de Michi':text}});
+}
+
+// ── PASOS ─────────────────────────────────────────────────────────────────────
+async function loadAllPasos(){try{const d=await api('Pasos?maxRecords=200');allPasos=d.records||[];}catch(e){}}
+function getPasos(id){
+  return allPasos.filter(r=>{const t=r.fields['Tarea'];return Array.isArray(t)&&t.includes(id);})
+    .sort((a,b)=>(a.fields['Orden']||0)-(b.fields['Orden']||0));
+}
+function makePasosEl(tareaId){
+  const pasos=getPasos(tareaId);if(!pasos.length)return null;
+  const row=document.createElement('div');row.className='pasos-row';
+  pasos.forEach((p,i)=>{
+    const h=p.fields['Hecho'];const prev=i===0||pasos.slice(0,i).every(x=>x.fields['Hecho']);
+    const cls=h?'hecho':prev?'activo':'';
+    const g=document.createElement('div');g.className='paso-g';
+    const c=document.createElement('div');c.className=`paso-c ${cls}`;c.textContent=h?'✓':(i+1);
+    c.onclick=async(e)=>{e.stopPropagation();const nv=!p.fields['Hecho'];p.fields['Hecho']=nv;c.className=`paso-c ${nv?'hecho':''}`;c.textContent=nv?'✓':(i+1);await api(`Pasos/${p.id}`,'PATCH',{fields:{'Hecho':nv}});updateBarra(tareaId);};
+    const t=document.createElement('div');t.className='paso-t';t.textContent=p.fields['Paso']||'';
+    g.appendChild(c);g.appendChild(t);row.appendChild(g);
+    if(i<pasos.length-1){const l=document.createElement('div');l.className='paso-linea';row.appendChild(l);}
+  });
+  return row;
+}
+function updateBarra(tareaId){
+  const pasos=getPasos(tareaId);const done=pasos.filter(p=>p.fields['Hecho']).length;
+  const pct=pasos.length>0?Math.max(3,Math.round((done/pasos.length)*100)):3;
+  const b=document.getElementById('barra-'+tareaId);
+  if(b){b.style.width=pct+'%';b.className='barra-fill '+(pct===100?'b-ok':pct>50?'b-warn':'b-fire');}
+}
+
+// ── RESPOND ───────────────────────────────────────────────────────────────────
+async function respondBtn(btn,id,val,correo){
+  event.stopPropagation();
+  const row=btn.closest('.btn-row');
+  row.outerHTML=`<div class="responded-row"><span class="responded-tag">✓ ${val}</span><span class="cambiar-btn" onclick="deshacerResp('${id}',this,'${correo||''}')">cambiar</span></div>`;
+  await api(`Tareas/${id}`,'PATCH',{fields:{'Respuesta de Michi':val,'Estado':'Hecho'}});
+}
+async function deshacerResp(id,el,correo){
+  const wrap=el.closest('.responded-row');
+  if(correo){
+    wrap.outerHTML=`<div class="btn-row"><div class="btn btn-si" onclick="respondBtn(this,'${id}','respóndele tú','correo')">respóndele tú</div><div class="btn btn-no" onclick="respondBtn(this,'${id}','lo hago yo','correo')">lo hago yo</div><div class="btn" onclick="respondBtn(this,'${id}','archivar','correo')">archivar</div></div>`;
+  } else {
+    wrap.outerHTML=`<div class="btn-row"><div class="btn btn-si" onclick="respondBtn(this,'${id}','sí')">sí</div><div class="btn btn-no" onclick="respondBtn(this,'${id}','no')">no</div><div class="btn" onclick="respondBtn(this,'${id}','después')">después</div></div>`;
+  }
+  await api(`Tareas/${id}`,'PATCH',{fields:{'Respuesta de Michi':'','Estado':'Pendiente'}});
+}
+
+// ── LOAD HOY ──────────────────────────────────────────────────────────────────
+async function loadHoy(){
+  const container=document.getElementById('hoy-container');
+  try{
+    await Promise.all([loadAllComments(),loadAllPasos()]);
+    const data=await api('Tareas?sort%5B0%5D%5Bfield%5D=Orden&sort%5B0%5D%5Bdirection%5D=asc');
+    const records=data.records||[];
+    const active=records.filter(r=>r.fields['Estado']!=='Hecho');
+
+    const urgentes=active.filter(r=>{
+      if(r.fields['Urgente']&&r.fields['Tipo']!=='Deadline')return true;
+      if(r.fields['Tipo']==='Deadline'){const d=diasRestantes(r.fields['Fecha límite']);return d!==null&&d<=1;}
+      return false;
+    });
+    const preguntas=active.filter(r=>r.fields['Tipo']==='Pregunta');
+    const correos=active.filter(r=>r.fields['Tipo']==='Correo');
+    const deadlines=active.filter(r=>r.fields['Tipo']==='Deadline'&&!urgentes.includes(r));
+    const tareas=active.filter(r=>r.fields['Tipo']==='Tarea'&&!r.fields['Urgente']);
+    const eventos=active.filter(r=>r.fields['Tipo']==='Evento');
+
+    if(urgentes.length>0)setDon('urgencia','Don Urgencia',`${urgentes.length} cosa${urgentes.length>1?'s':''} urgente${urgentes.length>1?'s':''}. Don está sudando.`,{bg:'#FAEEDA',border:'#FAC775',color:'#633806'});
+    else if(preguntas.length>0)setDon('pendiente','Don Pendiente',`${preguntas.length} pregunta${preguntas.length>1?'s':''} esperando respuesta.`,{bg:'#EEEDFE',border:'#AFA9EC',color:'#3C3489'});
+    else if(active.length===0)setDon('feliz','Don Feliz','¡Todo tachado! Don casi ronronea. Casi.',{bg:'#FBEAF0',border:'#ED93B1',color:'#72243E'});
+    else setDon('tranquilo','Don Tranquilo','Todo sereno hoy. Don vigila de todas formas.',{bg:'#f5f4f0',border:'#e8e5e0',color:'#1a1a1a'});
+
+    const wrap=document.createElement('div');
+    if(urgentes.length>0){addSecTitle(wrap,`ahora mismo`,urgentes.length);urgentes.forEach(r=>wrap.appendChild(makeCard(r,true)));}
+    if(preguntas.length>0){addSecTitle(wrap,'preguntas',preguntas.length,'q-badge');preguntas.forEach(r=>wrap.appendChild(makeCard(r,false)));}
+    if(correos.length>0){addSecTitle(wrap,'correos',correos.length);correos.forEach(r=>wrap.appendChild(makeCard(r,false)));}
+    if(deadlines.length>0){addSecTitle(wrap,'deadlines próximos',deadlines.length);deadlines.forEach(r=>wrap.appendChild(makeCard(r,false)));}
+    if(eventos.length>0){addSecTitle(wrap,'eventos',eventos.length);eventos.forEach(r=>wrap.appendChild(makeCard(r,false)));}
+    if(tareas.length>0){
+      addSecTitle(wrap,'tareas pendientes',null);
+      const cw=document.createElement('div');cw.className='card card-tarea';
+      tareas.forEach(r=>{
+        const f=r.fields;const done=f['Estado']==='Hecho';
+        const item=document.createElement('div');item.className='check-item';
+        const chk=document.createElement('div');chk.className='check'+(done?' done':'');chk.innerHTML=done?'<div class="tick"></div>':'';
+        chk.onclick=async(e)=>{e.stopPropagation();const nd=!chk.classList.contains('done');chk.classList.toggle('done',nd);chk.innerHTML=nd?'<div class="tick"></div>':'';const txt=item.querySelector('.check-txt');if(txt)txt.classList.toggle('done',nd);await api(`Tareas/${r.id}`,'PATCH',{fields:{'Estado':nd?'Hecho':'Pendiente'}});};
+        const body=document.createElement('div');body.className='check-body';
+        body.innerHTML=`<div class="check-txt${done?' done':''}">${f['Título']||''}</div>${f['Descripción']?`<div style="font-size:11px;color:#888;margin-top:2px;">${f['Descripción']}</div>`:''}`;
+        body.innerHTML+=makeCommentBox(r.id);
+        item.appendChild(chk);item.appendChild(body);cw.appendChild(item);
+      });
+      wrap.appendChild(cw);
+    }
+    if(!wrap.children.length)wrap.innerHTML='<div class="empty-state">Nada por hoy. Don descansa contigo. 🖤</div>';
+    container.innerHTML='';container.appendChild(wrap);
+  }catch(e){container.innerHTML=`<div class="empty-state">Error: ${e.message}</div>`;}
+}
+
+function addSecTitle(wrap,txt,count,badgeId){
+  const t=document.createElement('div');t.className='sec-title';
+  t.innerHTML=txt+(count?` <span class="badge"${badgeId?` id="${badgeId}"`:''}">${count}</span>`:'');
+  wrap.appendChild(t);
+}
+
+function makeCard(r,urgent){
+  const f=r.fields;
+  const d=(f['Tipo']==='Deadline'||f['Tipo']==='Evento')?diasRestantes(f['Fecha límite']):null;
+  const isLaureate=f['Categoría']==='Laureate';
+  let cc='card';
+  if(urgent||f['Urgente'])cc='card card-fire';
+  else if(f['Tipo']==='Deadline'&&d!==null&&d<=1)cc='card card-fire';
+  else if(f['Tipo']==='Deadline'&&d!==null&&d<=7)cc='card card-warn';
+  else if(f['Tipo']==='Tarea')cc='card card-tarea';
+  const card=document.createElement('div');
+  card.className=cc+(isLaureate?' card-laureate':'');
+
+  const titleColor=(urgent||f['Urgente'])||(f['Tipo']==='Deadline'&&d!==null&&d<=1)?'color:#791F1F;':(f['Tipo']==='Deadline'&&d!==null&&d<=7)?'color:#633806;':'';
+  card.innerHTML=`<div class="row-top">
+    <div class="item-title" style="${titleColor}">${f['Título']||''}</div>
+    ${f['Categoría']?`<span class="tag tag-${f['Categoría']}">${f['Categoría']}</span>`:''}
+  </div>`;
+
+  if(f['Tipo']==='Deadline'||f['Tipo']==='Evento'){
+    if(d!==null){
+      const col=barraColor(d);const pasos=getPasos(r.id);const pct=pctBarra(d,pasos);
+      card.innerHTML+=`<div class="deadline-row"><div class="deadline-txt">vence ${fechaBonita(f['Fecha límite'])}</div><div class="deadline-dias ${col.text}">${diasLabel(d)}</div></div>
+        <div class="barra-bg"><div class="barra-fill ${pct===100?'b-ok':col.bar}" id="barra-${r.id}" style="width:${pct}%"></div></div>`;
+    }
+  }
+
+  if(f['Descripción']&&f['Tipo']!=='Correo'){card.innerHTML+=`<div class="item-desc" style="${titleColor}">${f['Descripción']}</div>`;}
+
+  // Pasos
+  const pasosEl=makePasosEl(r.id);if(pasosEl)card.appendChild(pasosEl);
+
+  // Link
+  if(f['Link'])card.innerHTML+=`<a href="${f['Link']}" target="_blank" style="font-size:12px;color:#534AB7;display:block;margin-bottom:6px;">ver enlace →</a>`;
+
+  // Response buttons (preguntas, correos)
+  if(f['Tipo']==='Pregunta'){
+    if(f['Respuesta de Michi']){
+      card.innerHTML+=`<div class="responded-row"><span class="responded-tag">✓ ${f['Respuesta de Michi']}</span><span class="cambiar-btn" onclick="deshacerResp('${r.id}',this,'')">cambiar</span></div>`;
+    }else{
+      card.innerHTML+=`<div class="btn-row"><div class="btn btn-si" onclick="respondBtn(this,'${r.id}','sí')">sí</div><div class="btn btn-no" onclick="respondBtn(this,'${r.id}','no')">no</div><div class="btn" onclick="respondBtn(this,'${r.id}','después')">después</div></div>`;
+    }
+  }
+  if(f['Tipo']==='Correo'){
+    if(f['Descripción'])card.innerHTML+=`<div class="item-desc">${f['Descripción']}</div>`;
+    if(f['Respuesta de Michi']){
+      card.innerHTML+=`<div class="responded-row"><span class="responded-tag">✓ ${f['Respuesta de Michi']}</span><span class="cambiar-btn" onclick="deshacerResp('${r.id}',this,'correo')">cambiar</span></div>`;
+    }else{
+      card.innerHTML+=`<div class="btn-row"><div class="btn btn-si" onclick="respondBtn(this,'${r.id}','respóndele tú','correo')">respóndele tú</div><div class="btn btn-no" onclick="respondBtn(this,'${r.id}','lo hago yo','correo')">lo hago yo</div><div class="btn" onclick="respondBtn(this,'${r.id}','archivar','correo')">archivar</div></div>`;
+    }
+  }
+  if(f['Tipo']==='Deadline'){
+    const doneRow=document.createElement('div');doneRow.style.cssText='display:flex;justify-content:flex-end;margin-top:6px;';
+    doneRow.innerHTML=`<span onclick="marcarHecho('${r.id}',this);event.stopPropagation();" style="font-size:12px;cursor:pointer;background:#E1F5EE;color:#085041;padding:5px 12px;border-radius:12px;border:0.5px solid #5DCAA5;">✓ marcar como hecho</span>`;
+    card.appendChild(doneRow);
+  }
+
+  card.innerHTML+=makeCommentBox(r.id);
+
+  // Edit + delete + reorder
+  const footer=document.createElement('div');
+  footer.style.cssText='display:flex;justify-content:space-between;align-items:center;margin-top:8px;padding-top:6px;border-top:0.5px solid #f0ede8;';
+  footer.innerHTML=`<div style="display:flex;gap:8px;">
+    <span onclick="moverCard('${r.id}','up');event.stopPropagation();" style="font-size:18px;cursor:pointer;opacity:0.3;">↑</span>
+    <span onclick="moverCard('${r.id}','down');event.stopPropagation();" style="font-size:18px;cursor:pointer;opacity:0.3;">↓</span>
+    <span onclick="editarTarea('${r.id}');event.stopPropagation();" style="font-size:12px;cursor:pointer;color:#534AB7;padding:3px 10px;border:0.5px solid #534AB7;border-radius:10px;align-self:center;">✏️ editar</span>
+  </div>
+  <span onclick="eliminarTarea('${r.id}',this);event.stopPropagation();" style="font-size:16px;cursor:pointer;opacity:0.25;">🗑️</span>`;
+  card.appendChild(footer);
+  return card;
+}
+
+async function marcarHecho(id,btn){btn.textContent='...';await api(`Tareas/${id}`,'PATCH',{fields:{'Estado':'Hecho'}});loadHoy();}
+
+// ── LOAD PENDIENTES ───────────────────────────────────────────────────────────
+async function loadPendientes(){
+  const container=document.getElementById('pendientes-container');
+  container.innerHTML='<div class="big-spinner"></div>';
+  try{
+    await Promise.all([loadAllComments(),loadAllPasos()]);
+    const data=await api('Tareas?sort%5B0%5D%5Bfield%5D=Orden&sort%5B0%5D%5Bdirection%5D=asc');
+    const all=data.records||[];
+    const pending=all.filter(r=>r.fields['Estado']!=='Hecho');
+    if(!pending.length){container.innerHTML='<div class="empty-state">No hay pendientes. 🖤</div>';return;}
+
+    // Filter bar
+    const cats=['Investigación','Docencia','Salud','Personal','Admin','Asesorados','Laureate'];
+    const filterBar=document.createElement('div');filterBar.className='filter-bar';
+    filterBar.innerHTML=`<div class="filter-chip fc-all ${activeFilter==='all'?'active':''}" onclick="setFilter('all')">todas</div>`+
+      cats.map(c=>`<div class="filter-chip fc-${c} ${activeFilter===c?'active':''}" onclick="setFilter('${c}')">${c}</div>`).join('');
+    
+    const wrap=document.createElement('div');
+    const filtered=activeFilter==='all'?pending:pending.filter(r=>(r.fields['Categoría']||'')=== activeFilter);
+
+    if(!filtered.length){wrap.innerHTML='<div class="empty-state">Nada en esta categoría.</div>';}
+    else filtered.forEach(r=>wrap.appendChild(makeCard(r,false)));
+
+    container.innerHTML='';container.appendChild(filterBar);container.appendChild(wrap);
+  }catch(e){container.innerHTML=`<div class="loading-state">Error: ${e.message}</div>`;}
+}
+
+function setFilter(cat){
+  activeFilter=cat;loadPendientes();
+}
+
+// ── HISTORIAL ─────────────────────────────────────────────────────────────────
+async function loadHistorial(){
+  const container=document.getElementById('historial-container');
+  container.innerHTML='<div class="big-spinner"></div>';
+  try{
+    const data=await api('Tareas?filterByFormula=%7BEstado%7D%3D%22Hecho%22');
+    const records=data.records||[];
+    if(!records.length){container.innerHTML='<div class="empty-state">Nada completado todavía.</div>';return;}
+    const wrap=document.createElement('div');
+    records.forEach(r=>{
+      const f=r.fields;const card=document.createElement('div');card.className='card';card.style.opacity='0.7';
+      card.innerHTML=`<div class="row-top"><div class="item-title" style="text-decoration:line-through;color:#888;">${f['Título']||''}</div>${f['Categoría']?`<span class="tag tag-${f['Categoría']}">${f['Categoría']}</span>`:''}</div>
+        <div style="font-size:11px;color:#1D9E75;margin-top:4px;">✓ ${f['Respuesta de Michi']||'completado'}</div>`;
+      wrap.appendChild(card);
+    });
+    container.innerHTML='';container.appendChild(wrap);
+  }catch(e){container.innerHTML=`<div class="empty-state">Error: ${e.message}</div>`;}
+}
+
+// ── EDIT / DELETE / REORDER ───────────────────────────────────────────────────
+async function editarTarea(id){
+  try{const data=await api(`Tareas/${id}`);showEditModal(id,data.fields);}catch(e){alert('Error al cargar');}
+}
+function showEditModal(id,f){
+  const ex=document.getElementById('edit-modal');if(ex)ex.remove();
+  const tipo=f['Tipo']||'Tarea';
+  const modal=document.createElement('div');modal.id='edit-modal';modal.className='modal-bg';
+  const sheet=document.createElement('div');sheet.className='modal-sheet';
+  const fechaVal=f['Fecha límite']?f['Fecha límite'].split('T')[0]:'';
+  const cats=['investigación','docencia','salud','personal','admin','asesorados','laureate'];
+  const catHtml=cats.map(c=>{const on=(f['Categoría']||'').toLowerCase()===c;return`<div class="tag-sel tag-${c.slice(0,3)}${c==='laureate'?'u':''} ${on?'on':''}" onclick="toggleTagEdit(this)">${c}</div>`;}).join('');
+  sheet.innerHTML=`<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+    <div style="font-size:16px;font-weight:500;">Editar ${tipo.toLowerCase()}</div>
+    <div onclick="document.getElementById('edit-modal').remove()" style="cursor:pointer;font-size:22px;color:#888;">×</div>
+  </div>
+  <div class="field"><div class="field-label">título</div><input class="field-input" id="edit-titulo" value="${(f['Título']||'').replace(/"/g,'&quot;')}" autocomplete="off"/></div>
+  <div class="field"><div class="field-label">descripción</div><textarea class="field-input" id="edit-desc" autocomplete="off">${f['Descripción']||''}</textarea></div>
+  ${tipo==='Deadline'||tipo==='Evento'?`<div class="field"><div class="field-label">fecha</div><input class="field-input" type="date" id="edit-fecha" value="${fechaVal}"/></div>`:''}
+  ${tipo==='Deadline'||tipo==='Correo'||tipo==='Evento'?`<div class="field"><div class="field-label">link</div><input class="field-input" id="edit-link" value="${f['Link']||''}" autocomplete="off"/></div>`:''}
+  <div class="field"><div class="field-label">categoría</div><div class="tags-row" id="edit-cat-row">${catHtml}</div></div>
+  <div class="field"><div class="toggle-row"><div class="toggle-label">¿Urgente?</div><div class="toggle ${f['Urgente']?'on':''}" id="edit-urgente" onclick="this.classList.toggle('on')"><div class="toggle-knob"></div></div></div></div>
+  <button class="submit-btn" onclick="guardarEdicion('${id}','${tipo}')">guardar cambios</button>`;
+  modal.appendChild(sheet);document.body.appendChild(modal);
+  modal.onclick=e=>{if(e.target===modal)modal.remove();};
+}
+function toggleTagEdit(el){document.querySelectorAll('#edit-cat-row .tag-sel').forEach(t=>t.classList.remove('on'));el.classList.add('on');}
+async function guardarEdicion(id,tipo){
+  const titulo=document.getElementById('edit-titulo').value.trim();if(!titulo)return;
+  const catEl=document.querySelector('#edit-cat-row .tag-sel.on');
+  const fields={'Título':titulo,'Descripción':document.getElementById('edit-desc').value.trim(),
+    'Categoría':catEl?cap(catEl.textContent.trim()):'','Urgente':document.getElementById('edit-urgente').classList.contains('on')};
+  const fe=document.getElementById('edit-fecha');if(fe)fields['Fecha límite']=fe.value||null;
+  const le=document.getElementById('edit-link');if(le)fields['Link']=le.value.trim()||null;
+  try{await api(`Tareas/${id}`,'PATCH',{fields});document.getElementById('edit-modal').remove();loadHoy();if(document.getElementById('screen-pendientes').classList.contains('active'))loadPendientes();}
+  catch(e){alert('Error: '+e.message);}
+}
+async function eliminarTarea(id,btn){
+  if(!confirm('¿Eliminar esta tarea?'))return;
+  const card=btn.closest('.card');if(card)card.style.opacity='0.4';
+  try{await fetch(`https://api.airtable.com/v0/${BASE_ID}/Tareas/${id}`,{method:'DELETE',headers:{'Authorization':`Bearer ${TOKEN}`}});if(card)card.remove();}
+  catch(e){if(card)card.style.opacity='1';alert('Error');}
+}
+async function moverCard(id,dir){
+  const container=document.querySelector('#hoy-container, #pendientes-container .div, #pendientes-container');
+  const cards=[...document.querySelectorAll('.card[data-id], .card')].filter(c=>c.querySelector(`[onclick*="${id}"]`)||c.innerHTML.includes(`'${id}'`));
+  // Simple DOM reorder
+  const allCards=[...document.querySelectorAll('#hoy-container .card, #pendientes-container .card')];
+  const idx=allCards.findIndex(c=>c.innerHTML.includes(`'${id}'`));
+  if(idx===-1)return;
+  const newIdx=dir==='up'?idx-1:idx+1;
+  if(newIdx<0||newIdx>=allCards.length)return;
+  if(dir==='up')allCards[idx].parentNode.insertBefore(allCards[idx],allCards[newIdx]);
+  else allCards[newIdx].parentNode.insertBefore(allCards[newIdx],allCards[idx]);
+  // Save order
+  const updated=[...allCards[0].parentNode.querySelectorAll('.card')];
+  updated.forEach(async(c,i)=>{
+    const match=c.innerHTML.match(/Tareas\/([a-zA-Z0-9]+)/)||c.innerHTML.match(/'([a-zA-Z0-9]{17})'/);
+    if(match)try{await api(`Tareas/${match[1]}`,'PATCH',{fields:{'Orden':i+1}});}catch(e){}
+  });
+}
+
+// ── FORM ──────────────────────────────────────────────────────────────────────
+const FORM_TEMPLATES={
+  tarea:`<div class="form-section">
+    <div class="field"><div class="field-label">¿qué hay que hacer?</div><input class="field-input" id="f-titulo" placeholder="ej. Llamar al comedor" autocomplete="off"/></div>
+    <div class="field"><div class="field-label">descripción</div><textarea class="field-input" id="f-desc" placeholder="contexto..." autocomplete="off"></textarea></div>
+    <div class="field"><div class="field-label">categoría</div><div class="tags-row">
+      <div class="tag-sel tag-inv" onclick="toggleTag(this,'f-cat')">investigación</div>
+      <div class="tag-sel tag-doc" onclick="toggleTag(this,'f-cat')">docencia</div>
+      <div class="tag-sel tag-sal" onclick="toggleTag(this,'f-cat')">salud</div>
+      <div class="tag-sel tag-per" onclick="toggleTag(this,'f-cat')">personal</div>
+      <div class="tag-sel tag-adm" onclick="toggleTag(this,'f-cat')">admin</div>
+      <div class="tag-sel tag-ase" onclick="toggleTag(this,'f-cat')">asesorados</div>
+      <div class="tag-sel tag-lau" onclick="toggleTag(this,'f-cat')">laureate</div>
+    </div></div>
+    <div class="field"><div class="toggle-row"><div class="toggle-label">¿urgente hoy?</div><div class="toggle" id="f-urgente" onclick="this.classList.toggle('on')"><div class="toggle-knob"></div></div></div></div>
+    <button class="submit-btn" id="submit-btn" onclick="submitForm('tarea')">agregar</button>
+    <div class="error-msg" id="f-error"></div>
+  </div>`,
+
+  deadline:`<div class="form-section">
+    <div class="field"><div class="field-label">nombre</div><input class="field-input" id="f-titulo" placeholder="ej. Tesis Romani Chia" autocomplete="off"/></div>
+    <div class="field"><div class="field-label">fecha límite</div><input class="field-input" type="date" id="f-fecha"/></div>
+    <div class="field"><div class="field-label">hora límite (opcional)</div><input class="field-input" type="time" id="f-hora"/></div>
+    <div class="field"><div class="field-label">descripción</div><textarea class="field-input" id="f-desc" placeholder="qué hay que entregar..." autocomplete="off"></textarea></div>
+    <div class="field"><div class="field-label">link (si tiene)</div><input class="field-input" id="f-link" placeholder="https://..." autocomplete="off"/></div>
+    <div class="field"><div class="field-label">pasos</div>
+      <div class="opciones-list" id="pasos-list">
+        <div class="opcion-row"><input class="opcion-input paso-inp" placeholder="paso 1" autocomplete="off"/></div>
+        <div class="opcion-row"><input class="opcion-input paso-inp" placeholder="paso 2" autocomplete="off"/></div>
+      </div>
+      <div class="add-opcion" onclick="addPaso()">+ agregar paso</div>
+    </div>
+    <div class="field"><div class="field-label">categoría</div><div class="tags-row">
+      <div class="tag-sel tag-inv" onclick="toggleTag(this,'f-cat')">investigación</div>
+      <div class="tag-sel tag-doc" onclick="toggleTag(this,'f-cat')">docencia</div>
+      <div class="tag-sel tag-sal" onclick="toggleTag(this,'f-cat')">salud</div>
+      <div class="tag-sel tag-per" onclick="toggleTag(this,'f-cat')">personal</div>
+      <div class="tag-sel tag-ase" onclick="toggleTag(this,'f-cat')">asesorados</div>
+      <div class="tag-sel tag-lau" onclick="toggleTag(this,'f-cat')">laureate</div>
+    </div></div>
+    <button class="submit-btn" id="submit-btn" onclick="submitForm('deadline')">agregar</button>
+    <div class="error-msg" id="f-error"></div>
+  </div>`,
+
+  pregunta:`<div class="form-section">
+    <div class="field"><div class="field-label">¿qué preguntas?</div><textarea class="field-input" id="f-titulo" placeholder="ej. ¿Respondo el correo de Marta?" autocomplete="off"></textarea></div>
+    <div class="field"><div class="field-label">contexto</div><textarea class="field-input" id="f-desc" placeholder="lo que necesita saber..." autocomplete="off"></textarea></div>
+    <div class="field"><div class="field-label">categoría</div><div class="tags-row">
+      <div class="tag-sel tag-inv" onclick="toggleTag(this,'f-cat')">investigación</div>
+      <div class="tag-sel tag-doc" onclick="toggleTag(this,'f-cat')">docencia</div>
+      <div class="tag-sel tag-sal" onclick="toggleTag(this,'f-cat')">salud</div>
+      <div class="tag-sel tag-per" onclick="toggleTag(this,'f-cat')">personal</div>
+      <div class="tag-sel tag-adm" onclick="toggleTag(this,'f-cat')">admin</div>
+      <div class="tag-sel tag-ase" onclick="toggleTag(this,'f-cat')">asesorados</div>
+      <div class="tag-sel tag-lau" onclick="toggleTag(this,'f-cat')">laureate</div>
+    </div></div>
+    <div class="field"><div class="toggle-row"><div class="toggle-label">¿urgente?</div><div class="toggle" id="f-urgente" onclick="this.classList.toggle('on')"><div class="toggle-knob"></div></div></div></div>
+    <button class="submit-btn" id="submit-btn" onclick="submitForm('pregunta')">agregar</button>
+    <div class="error-msg" id="f-error"></div>
+  </div>`,
+
+  correo:`<div class="form-section">
+    <div class="field"><div class="field-label">¿de quién?</div><input class="field-input" id="f-de" placeholder="ej. Marta Ríos" autocomplete="off"/></div>
+    <div class="field"><div class="field-label">asunto</div><input class="field-input" id="f-titulo" placeholder="ej. Propuesta proyecto" autocomplete="off"/></div>
+    <div class="field"><div class="field-label">resumen</div><textarea class="field-input" id="f-desc" placeholder="qué dice, qué pide..." autocomplete="off"></textarea></div>
+    <div class="field"><div class="field-label">¿qué necesita hacer?</div><div class="tags-row">
+      <div class="tag-sel tag-accion" onclick="toggleTag(this,'f-accion')">responder</div>
+      <div class="tag-sel tag-accion" onclick="toggleTag(this,'f-accion')">revisar</div>
+      <div class="tag-sel tag-accion" onclick="toggleTag(this,'f-accion')">archivar</div>
+      <div class="tag-sel tag-accion" onclick="toggleTag(this,'f-accion')">yo respondo</div>
+    </div></div>
+    <div class="field"><div class="field-label">link (opcional)</div><input class="field-input" id="f-link" placeholder="https://..." autocomplete="off"/></div>
+    <div class="field"><div class="toggle-row"><div class="toggle-label">¿urgente?</div><div class="toggle" id="f-urgente" onclick="this.classList.toggle('on')"><div class="toggle-knob"></div></div></div></div>
+    <button class="submit-btn" id="submit-btn" onclick="submitForm('correo')">agregar</button>
+    <div class="error-msg" id="f-error"></div>
+  </div>`,
+
+  evento:`<div class="form-section">
+    <div class="field"><div class="field-label">nombre del evento</div><input class="field-input" id="f-titulo" placeholder="ej. Reunión CAP" autocomplete="off"/></div>
+    <div class="field"><div class="field-label">fecha</div><input class="field-input" type="date" id="f-fecha"/></div>
+    <div class="field"><div class="field-label">hora</div><input class="field-input" type="time" id="f-hora"/></div>
+    <div class="field"><div class="field-label">descripción o lugar</div><textarea class="field-input" id="f-desc" placeholder="dónde es..." autocomplete="off"></textarea></div>
+    <div class="field"><div class="field-label">link (si tiene)</div><input class="field-input" id="f-link" placeholder="https://..." autocomplete="off"/></div>
+    <div class="field"><div class="field-label">categoría</div><div class="tags-row">
+      <div class="tag-sel tag-inv" onclick="toggleTag(this,'f-cat')">investigación</div>
+      <div class="tag-sel tag-doc" onclick="toggleTag(this,'f-cat')">docencia</div>
+      <div class="tag-sel tag-per" onclick="toggleTag(this,'f-cat')">personal</div>
+      <div class="tag-sel tag-ase" onclick="toggleTag(this,'f-cat')">asesorados</div>
+      <div class="tag-sel tag-lau" onclick="toggleTag(this,'f-cat')">laureate</div>
+    </div></div>
+    <button class="submit-btn" id="submit-btn" onclick="submitForm('evento')">agregar</button>
+    <div class="error-msg" id="f-error"></div>
+  </div>`
+};
+
+function selectTipo(tipo){
+  document.querySelectorAll('.tipo-btn').forEach(b=>{b.classList.remove('sel');b.style.borderColor='#e8e5e0';b.style.borderWidth='0.5px';});
+  document.getElementById('success-screen').style.display='none';
+  const colors={tarea:'#1D9E75',deadline:'#EF9F27',pregunta:'#534AB7',correo:'#D4537E',evento:'#534AB7'};
+  document.getElementById('tipo-'+tipo).classList.add('sel');
+  document.getElementById('tipo-'+tipo).style.borderColor=colors[tipo];
+  document.getElementById('tipo-'+tipo).style.borderWidth='1.5px';
+  document.getElementById('form-area').innerHTML=FORM_TEMPLATES[tipo];
+  selectedCats={};
+  setTimeout(()=>document.getElementById('form-area').scrollIntoView({behavior:'smooth',block:'nearest'}),50);
+}
+function toggleTag(el,group){
+  document.querySelectorAll(`[onclick="toggleTag(this,'${group}')"]`).forEach(t=>t.classList.remove('on'));
+  el.classList.add('on');selectedCats[group]=el.textContent.trim();
+}
+function addPaso(){
+  const list=document.getElementById('pasos-list');const n=list.children.length+1;
+  const div=document.createElement('div');div.className='opcion-row';
+  div.innerHTML=`<input class="opcion-input paso-inp" placeholder="paso ${n}" autocomplete="off"/>`;
+  list.appendChild(div);
+}
+function setLoading(loading){
+  const btn=document.getElementById('submit-btn');if(!btn)return;
+  btn.disabled=loading;btn.innerHTML=loading?'<div class="spinner"></div>':'agregar';
+}
+async function submitForm(tipo){
+  const errEl=document.getElementById('f-error');if(errEl)errEl.style.display='none';
+  let fields={'Estado':'Pendiente'};
+  const titulo=(document.getElementById('f-titulo')?.value||'').trim();
+  if(!titulo){document.getElementById('f-titulo')?.focus();return;}
+
+  if(tipo==='tarea'){
+    fields={...fields,'Título':titulo,'Tipo':'Tarea','Descripción':document.getElementById('f-desc')?.value.trim()||'',
+      'Categoría':cap(selectedCats['f-cat']||''),'Urgente':document.getElementById('f-urgente')?.classList.contains('on')};
+  }else if(tipo==='deadline'){
+    let desc=document.getElementById('f-desc')?.value.trim()||'';
+    const hora=document.getElementById('f-hora')?.value;if(hora)desc=(desc?desc+'\n':'')+'Hora límite: '+hora;
+    fields={...fields,'Título':titulo,'Tipo':'Deadline','Descripción':desc,'Categoría':cap(selectedCats['f-cat']||'')};
+    const fecha=document.getElementById('f-fecha')?.value;if(fecha)fields['Fecha límite']=fecha;
+    const link=document.getElementById('f-link')?.value.trim();if(link)fields['Link']=link;
+  }else if(tipo==='pregunta'){
+    fields={...fields,'Título':titulo,'Tipo':'Pregunta','Descripción':document.getElementById('f-desc')?.value.trim()||'',
+      'Categoría':cap(selectedCats['f-cat']||''),'Urgente':document.getElementById('f-urgente')?.classList.contains('on')};
+  }else if(tipo==='correo'){
+    const de=document.getElementById('f-de')?.value.trim()||'';
+    fields={...fields,'Título':de?`${de} — ${titulo}`:titulo,'Tipo':'Correo','Descripción':document.getElementById('f-desc')?.value.trim()||'',
+      'Urgente':document.getElementById('f-urgente')?.classList.contains('on')};
+    const link=document.getElementById('f-link')?.value.trim();if(link)fields['Link']=link;
+  }else if(tipo==='evento'){
+    let desc=document.getElementById('f-desc')?.value.trim()||'';
+    const hora=document.getElementById('f-hora')?.value;if(hora)desc=(desc?desc+'\n':'')+'Hora: '+hora;
+    fields={...fields,'Título':titulo,'Tipo':'Evento','Descripción':desc,'Categoría':cap(selectedCats['f-cat']||'')};
+    const fecha=document.getElementById('f-fecha')?.value;if(fecha)fields['Fecha límite']=fecha;
+    const link=document.getElementById('f-link')?.value.trim();if(link)fields['Link']=link;
+  }
+
+  setLoading(true);
+  try{
+    const rec=await api('Tareas','POST',{fields});
+    if(tipo==='deadline'){
+      const pasos=[...document.querySelectorAll('.paso-inp')].map(i=>i.value.trim()).filter(Boolean);
+      for(let i=0;i<pasos.length;i++)await api('Pasos','POST',{fields:{'Paso':pasos[i],'Tarea':[rec.id],'Orden':i+1,'Hecho':false}});
+    }
+    document.getElementById('form-area').innerHTML='';
+    document.querySelectorAll('.tipo-btn').forEach(b=>{b.classList.remove('sel');b.style.borderColor='#e8e5e0';b.style.borderWidth='0.5px';});
+    document.getElementById('success-screen').style.display='block';
+    document.getElementById('success-sub').textContent=currentUser==='Michi'?'Don lo tiene en la mira.':'Don lo tiene en la mira.';
+    window.scrollTo(0,0);
+    if(fields['Urgente']){
+      const msg=encodeURIComponent(`🐱 Don Urgencia: hay algo urgente — "${fields['Título']}". Entra a la app cuando puedas.`);
+      document.getElementById('wa-btn').href=`https://wa.me/?text=${msg}`;
+      document.getElementById('wa-wrap').style.display='block';
+    }else{document.getElementById('wa-wrap').style.display='none';}
+  }catch(e){if(errEl){errEl.textContent=`Error: ${e.message}`;errEl.style.display='block';}}
+  setLoading(false);
+}
+function resetForm(){
+  document.getElementById('success-screen').style.display='none';
+  document.getElementById('form-area').innerHTML='';
+  document.querySelectorAll('.tipo-btn').forEach(b=>{b.classList.remove('sel');b.style.borderColor='#e8e5e0';b.style.borderWidth='0.5px';});
+  selectedCats={};
+}
+
+// ── NAVIGATION ────────────────────────────────────────────────────────────────
+const screenHist=['hoy'];
+window.addEventListener('popstate',()=>{
+  if(screenHist.length>1){screenHist.pop();const prev=screenHist[screenHist.length-1];
+    document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+    document.querySelectorAll('.nav-it').forEach(n=>n.classList.remove('active'));
+    document.getElementById('screen-'+prev).classList.add('active');
+    document.getElementById('nav-'+prev).classList.add('active');
+    history.pushState(null,'',window.location.href);}
+});
+history.pushState(null,'',window.location.href);
+
+function switchScreen(name){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.nav-it').forEach(n=>n.classList.remove('active'));
+  document.getElementById('screen-'+name).classList.add('active');
+  document.getElementById('nav-'+name).classList.add('active');
+  window.scrollTo(0,0);
+  const greetings={hoy:'buenos días',agregar:'agregar',pendientes:'pendientes',historial:'historial'};
+  document.getElementById('top-greeting').textContent=greetings[name]||'';
+  screenHist.push(name);history.pushState(null,'',window.location.href);
+}
+
+function initApp(){loadHoy();checkNotifs();}
+
+async function checkNotifs(){
+  try{
+    const d=await api('Tareas?sort%5B0%5D%5Bfield%5D=Urgente&sort%5B0%5D%5Bdirection%5D=desc');
+    const records=d.records||[];
+    const hasU=records.some(r=>{if(r.fields['Urgente']&&r.fields['Estado']!=='Hecho')return true;if(r.fields['Tipo']==='Deadline'){const dx=diasRestantes(r.fields['Fecha límite']);return dx!==null&&dx<=1&&r.fields['Estado']!=='Hecho';}return false;});
+    const pending=records.filter(r=>r.fields['Estado']!=='Hecho');
+    if(hasU)document.getElementById('notif-hoy').style.display='block';
+    if(pending.length>0)document.getElementById('notif-pendientes').style.display='block';
+  }catch(e){}
+}
+
+setInterval(()=>{
+  const focused=document.activeElement;
+  if(focused&&(focused.tagName==='INPUT'||focused.tagName==='TEXTAREA'))return;
+  if(window.scrollY>100)return;
+  const active=document.querySelector('.screen.active');if(!active)return;
+  if(active.id==='screen-hoy')loadHoy();
+  else if(active.id==='screen-pendientes')loadPendientes();
+},30000);
+</script>
+</body>
+</html>
